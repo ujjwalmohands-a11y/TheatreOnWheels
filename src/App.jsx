@@ -139,44 +139,41 @@ export default function App() {
 
         {/* 8. Coming Soon / Stay Updated */}
         <AnimatedSection id="coming-soon" variant="pass">
-          <div className="pass-head">
-            <span className="pass-eyebrow"><i></i> Early access</span>
-            <h2>Reserve your journey pass</h2>
-            <p>Be among the first to step through the door when the theatre arrives.</p>
-          </div>
+          <div className="pass-card-inner">
+            <div className="pass-serial">PASS // NO. 2026-001</div>
+            <div className="pass-head">
+              <span className="pass-eyebrow">[ EARLY ACCESS ]</span>
+              <h2>Reserve your journey pass</h2>
+              <p>Be among the first to step through the door when the theatre arrives.</p>
+            </div>
           <form className="pass-form" onSubmit={handleSubmit}>
             <label className="pass-field">
               <span>Name</span>
               <div className="pass-control">
-                <svg className="pass-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                 <input name="name" type="text" placeholder="Your name" required />
               </div>
             </label>
             <label className="pass-field">
               <span>City</span>
               <div className="pass-control">
-                <svg className="pass-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
                 <input name="city" type="text" placeholder="Your city" required />
               </div>
             </label>
             <label className="pass-field">
               <span>WhatsApp</span>
               <div className="pass-control">
-                <svg className="pass-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
                 <input name="phone" type="tel" placeholder="+91 00000 00000" />
               </div>
             </label>
             <label className="pass-field">
               <span>Email</span>
               <div className="pass-control">
-                <svg className="pass-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
                 <input name="email" type="email" placeholder="you@example.com" />
               </div>
             </label>
             <label className="pass-field wide">
               <span>Preferred world</span>
               <div className="pass-control">
-                <svg className="pass-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>
                 <select name="world" defaultValue="Space Exploration">
                   <option>Space Exploration</option>
                   <option>Deep Ocean Expedition</option>
@@ -185,9 +182,14 @@ export default function App() {
                 </select>
               </div>
             </label>
-            <button type="submit" className="pass-submit">Request pass <b>→</b></button>
-            <p className="pass-note">No payment now. We'll only message you when the doors open.</p>
+            <div className="pass-action-area">
+              <button type="submit" className="pass-submit">REQUEST PASS &rarr;</button>
+            </div>
           </form>
+          <div className="pass-footer-text">
+            No payment now. You will receive a private invitation when the doors open in your city.
+          </div>
+          </div>
         </AnimatedSection>
 
         {/* 9. Share / Follow */}
