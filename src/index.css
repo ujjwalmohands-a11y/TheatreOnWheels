@@ -3,14 +3,14 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 :root {
-    --bp-blue: #0a2a4a;
-    --bp-blue-mid: #0d3561;
-    --bp-blue-dark: #071e36;
-    --bp-line: rgba(160, 200, 255, 0.2);
-    --bp-line-mid: rgba(160, 200, 255, 0.45);
-    --bp-line-strong: rgba(160, 200, 255, 0.85);
-    --bp-white: #c8e0f8;
-    --bp-white-dim: #7aadd4;
+    --bp-blue: #0A1930;
+    --bp-blue-mid: #112240;
+    --bp-blue-dark: #060F1E;
+    --bp-line: rgba(74, 204, 255, 0.12);
+    --bp-line-mid: rgba(74, 204, 255, 0.3);
+    --bp-line-strong: rgba(74, 204, 255, 0.75);
+    --bp-white: #e1efff;
+    --bp-white-dim: #8faecf;
     --bp-yellow: #f0c060;
 
     --font-mono: 'Space Mono', monospace;
@@ -37,11 +37,13 @@ body {
     inset: 0;
     z-index: -1;
     background-image:
+        radial-gradient(circle at center, transparent 20%, var(--bp-blue-dark) 100%),
         linear-gradient(var(--bp-line) 1px, transparent 1px),
         linear-gradient(90deg, var(--bp-line) 1px, transparent 1px),
         linear-gradient(var(--bp-line-mid) 1px, transparent 1px),
         linear-gradient(90deg, var(--bp-line-mid) 1px, transparent 1px);
     background-size:
+        100% 100%,
         24px 24px,
         24px 24px,
         120px 120px,

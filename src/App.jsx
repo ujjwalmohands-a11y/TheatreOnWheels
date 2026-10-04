@@ -26,7 +26,7 @@ const AnimatedSection = ({ children, id, variant }) => {
     <section id={id} className={`scaffold-section${variant ? ` ${variant}-section` : ''}`}>
       <motion.div
         ref={ref}
-        className={`content-box${variant ? ` ${variant}-box` : ''}`}
+        className={`content-box container${variant ? ` ${variant}-box` : ''}`}
         initial="hidden"
         animate={controls}
         variants={{
@@ -71,7 +71,7 @@ export default function App() {
       {/* 1. Hero — "Arrival" */}
       <Hero />
 
-      <main className="container">
+      <main>
 
         {/* 2. What Is It? */}
         <AnimatedSection id="what-is-it">

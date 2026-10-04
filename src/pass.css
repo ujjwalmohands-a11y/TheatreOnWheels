@@ -159,8 +159,6 @@
 
 /* ===== Premium glass redesign ===== */
 .scaffold-section.pass-section {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
   background-image: radial-gradient(60vw 60vh at 0% 0%, #1A2342 0%, transparent 70%) !important;
   background-color: #0c0814 !important; /* solid color to hide the blueprint behind */
   position: relative;
