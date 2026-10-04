@@ -1,0 +1,245 @@
+/* Journey Pass section (SEC_08) + Prebook ticket modal — premium minimal */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+:root {
+  --p-cream: #f7e8c8;
+  --p-muted: #a9b8cc;
+  --p-gold: #f0a94c;
+  --p-serif: "Cormorant Garamond", Georgia, serif;
+  --p-sans: "Source Sans 3", system-ui, sans-serif;
+}
+
+.pass-section::after { display: none; }
+
+.content-box.pass-box {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 56px 52px 44px;
+  border: 1px solid rgba(247, 232, 200, 0.15);
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 80% at 50% -20%, rgba(240, 169, 76, 0.15), transparent 60%),
+    rgba(15, 10, 26, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  font-family: var(--p-sans);
+}
+.content-box.pass-box::before,
+.content-box.pass-box::after { display: none; }
+.content-box.pass-box:hover { border-color: rgba(240, 169, 76, 0.3); }
+
+.pass-head { text-align: center; margin-bottom: 40px; }
+.pass-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px;
+  border: 1px solid rgba(240, 169, 76, 0.4);
+  color: var(--p-gold);
+  font: 600 0.68rem/1 var(--p-sans);
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.pass-eyebrow i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--p-gold);
+  box-shadow: 0 0 10px var(--p-gold); animation: blink 1.8s infinite;
+}
+.pass-box h2 {
+  font-family: var(--p-serif);
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 500; letter-spacing: 0; text-transform: none;
+  color: var(--p-cream);
+  border: 0; padding: 0; margin: 22px 0 12px; line-height: 1.1;
+}
+.pass-box .pass-head p { color: var(--p-muted); font-size: 1rem; max-width: 380px; margin: 0 auto; }
+
+.pass-form { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 28px; }
+.pass-field { display: flex; flex-direction: column; gap: 6px; position: relative; }
+.pass-field.wide { grid-column: 1 / -1; }
+.pass-field span {
+  font: 600 0.68rem/1 var(--p-sans);
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--p-muted);
+  transition: color .25s;
+}
+.pass-field:focus-within span { color: var(--p-gold); }
+.pass-field input,
+.pass-field select {
+  width: 100%;
+  background: transparent; border: 0; outline: 0; border-radius: 0;
+  border-bottom: 1px solid rgba(247, 232, 200, 0.2);
+  padding: 10px 0 12px;
+  color: var(--p-cream);
+  font: 400 1rem var(--p-sans);
+  transition: border-color .25s, box-shadow .25s;
+  appearance: none; -webkit-appearance: none;
+}
+.pass-field input::placeholder { color: rgba(169, 184, 204, 0.4); }
+.pass-field input:focus,
+.pass-field select:focus {
+  border-bottom-color: var(--p-gold);
+  box-shadow: 0 1px 0 0 var(--p-gold);
+}
+.pass-field select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23f0a94c' stroke-width='1.5'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 4px center;
+}
+.pass-field select option { background: #0d2238; color: var(--p-cream); }
+
+.pass-submit {
+  grid-column: 1 / -1; margin-top: 6px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 28px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 600 0.82rem var(--p-sans); letter-spacing: 0.2em; text-transform: uppercase;
+  color: #2a1606;
+  background: linear-gradient(135deg, #ffd08a, var(--p-gold) 55%, #ff7a3d);
+  box-shadow: 0 12px 30px -10px rgba(240, 169, 76, 0.6);
+  transition: transform .25s, box-shadow .25s, filter .25s;
+}
+.pass-submit b { font-weight: 500; transition: transform .25s; }
+.pass-submit:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 18px 36px -10px rgba(240, 169, 76, 0.75); }
+.pass-submit:hover b { transform: translateX(5px); }
+.pass-note { grid-column: 1 / -1; text-align: center; font-size: 0.8rem !important; color: rgba(169, 184, 204, 0.6) !important; }
+
+@media (max-width: 600px) {
+  .content-box.pass-box { padding: 40px 24px 32px; border-radius: 22px; }
+  .pass-form { grid-template-columns: 1fr; }
+}
+
+/* ---------- Ticket modal ---------- */
+.tk-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 40px; padding: 24px; font-family: var(--p-sans);
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgba(240, 169, 76, 0.16), transparent 70%),
+    rgba(6, 12, 24, 0.88);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.tk-close {
+  position: absolute; top: 22px; right: 22px; cursor: pointer;
+  width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--p-cream); font-size: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(247, 232, 200, 0.18);
+  transition: background .25s, transform .25s;
+}
+.tk-close:hover { background: rgba(255, 255, 255, 0.14); transform: rotate(90deg); }
+.tk-copy { text-align: center; color: var(--p-cream); max-width: 560px; }
+.tk-eyebrow {
+  font: 600 0.7rem/1 var(--p-sans); letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--p-gold);
+}
+.tk-title {
+  font-family: var(--p-serif); font-weight: 500;
+  font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.12; margin-top: 14px;
+}
+.tk-sub { margin-top: 10px; color: var(--p-muted); font-size: 0.95rem; }
+.tk-hint {
+  position: absolute; bottom: -42px; text-align: center; pointer-events: none;
+  font: 600 0.7rem var(--p-sans); letter-spacing: 0.26em; text-transform: uppercase; color: var(--p-gold);
+}
+.tk-link {
+  cursor: pointer; background: none; border: 0;
+  color: var(--p-muted); font: 500 0.85rem var(--p-sans);
+  text-decoration: underline; text-underline-offset: 4px; transition: color .25s;
+}
+.tk-link:hover { color: var(--p-cream); }
+.tk-done {
+  cursor: pointer; border: 0; border-radius: 999px; padding: 14px 40px;
+  font: 600 0.8rem var(--p-sans); letter-spacing: 0.2em; text-transform: uppercase;
+  color: #2a1606; background: linear-gradient(135deg, #ffd08a, var(--p-gold));
+  box-shadow: 0 12px 30px -10px rgba(240, 169, 76, 0.6); transition: transform .25s;
+}
+.tk-done:hover { transform: translateY(-2px); }
+
+.tk-modal h2.tk-title { text-transform: none; letter-spacing: 0; border: 0; padding: 0; color: var(--p-cream); font-family: var(--p-serif); font-weight: 500; }
+
+.scaffold-section.pass-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; margin: 100px 0; border: none !important; }
+
+/* ===== Premium glass redesign ===== */
+.scaffold-section.pass-section {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background-image: radial-gradient(60vw 60vh at 0% 0%, #1A2342 0%, transparent 70%) !important;
+  background-color: #0c0814 !important; /* solid color to hide the blueprint behind */
+  position: relative;
+  overflow: hidden;
+  padding: 100px 0;
+}
+.scaffold-section.pass-section::after {
+  content: ""; position: absolute; inset: -50%; z-index: 1; pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E"),
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.2px);
+  background-size: 160px 160px, 26px 26px;
+}
+.scaffold-section.pass-section::before {
+  content: ""; position: absolute; inset: -30vh -20vw; z-index: 0; pointer-events: none;
+  background: radial-gradient(45% 40% at 50% 50%, rgba(237,143,3,.10), transparent 70%);
+}
+.scaffold-section.pass-section > * { position: relative; z-index: 2; }
+
+
+.content-box.pass-box {
+  position: relative;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid transparent;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.7), 0 0 40px rgba(237,143,3,.08);
+}
+.content-box.pass-box::before {
+  display: block; content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: linear-gradient(180deg, rgba(255,183,94,.3), rgba(255,255,255,.05));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+.content-box.pass-box:hover { border-color: transparent; }
+
+.pass-box, .pass-field span, .pass-field input, .pass-field select, .pass-submit, .pass-eyebrow, .pass-note {
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+}
+.pass-box h2 { font-family: var(--p-serif); }
+.pass-field span { letter-spacing: 0.05em; }
+.pass-eyebrow { letter-spacing: 0.05em; border-color: rgba(255,183,94,.3); background: rgba(255,183,94,.06); }
+.pass-eyebrow i {
+  background: #4ade80; box-shadow: 0 0 8px rgba(255,183,94,.6), 0 0 0 0 rgba(74,222,128,.6);
+  animation: passPulse 1.8s ease-out infinite;
+}
+@keyframes passPulse {
+  0% { box-shadow: 0 0 8px rgba(255,183,94,.6), 0 0 0 0 rgba(74,222,128,.55); }
+  70%,100% { box-shadow: 0 0 8px rgba(255,183,94,.6), 0 0 0 8px rgba(74,222,128,0); }
+}
+
+.pass-control { position: relative; }
+.pass-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; fill: none; stroke: rgba(169,184,204,.6);
+  stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; pointer-events: none;
+  transition: stroke .25s;
+}
+.pass-control:focus-within .pass-icon { stroke: #ffb75e; }
+.pass-field input, .pass-field select {
+  background-color: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px; padding: 14px 14px 14px 44px;
+}
+.pass-field select { background-position: right 16px center; padding-right: 40px; }
+.pass-field input:focus, .pass-field select:focus {
+  border-color: rgba(255,183,94,.4);
+  box-shadow: 0 0 0 2px rgba(255,183,94,.3);
+}
+
+.pass-submit {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #FFC876 0%, #E67E22 100%);
+  box-shadow: 0 10px 25px rgba(230,126,34,.4);
+}
+.pass-submit::after {
+  content: ""; position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg); transition: left .7s ease;
+}
+.pass-submit:hover::after { left: 140%; }
+.pass-submit:hover { box-shadow: 0 14px 32px rgba(230,126,34,.55); }
+.pass-submit:active { transform: translateY(0) scale(.98); }
