@@ -1746,8 +1746,8 @@ var TICKET_LAYOUT = {
   stubSize: 67.61 / REF,
   stubTracking: 0,
   stubOpacity: 0.88,
-  watermarkSize: 144 / REF,
-  watermarkOpacity: 0.6,
+  watermarkSize: 110 / REF,
+  watermarkOpacity: 0.45,
   watermarkColor: "#ffdcbe",
   inkColor: "#5a3520"
 };
@@ -2013,10 +2013,11 @@ function TicketCard({
           /* @__PURE__ */ jsxs(
             "div",
             {
-              className: "absolute whitespace-pre uppercase",
+              className: "absolute whitespace-nowrap uppercase overflow-hidden",
               style: {
                 left: layout.padding * width,
                 top: layout.labelTop * width,
+                right: (width - perfX) + layout.padding * width,
                 fontSize: layout.labelSize * width,
                 lineHeight: `${layout.labelLead * width}px`,
                 letterSpacing: `${layout.labelTracking}em`

@@ -1,25 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './NavBar.css';
 
+const NAV_LINKS = [
+  { href: '#hero',    label: 'Arrival' },
+  { href: '#canvas',  label: 'Canvas' },
+  { href: '#reserve', label: 'Journey Pass' },
+];
+
 export default function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [lang, setLang] = useState('EN');
   const [soundOn, setSoundOn] = useState(false);
-  
-  const navRef = useRef(null);
   const linksRef = useRef(null);
   const lampRef = useRef(null);
-  const [activeHash, setActiveHash] = useState('#what-is-it');
-  
-  // scroll listener
+  const [activeHash, setActiveHash] = useState('#hero');
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // lamp movement logic
   const moveLampTo = (element) => {
     if (!element || !linksRef.current || !lampRef.current) return;
     const l = linksRef.current.getBoundingClientRect();
@@ -28,7 +30,6 @@ export default function NavBar() {
   };
 
   useEffect(() => {
-    // Small delay to ensure DOM is painted
     const timer = setTimeout(() => {
       const activeEl = linksRef.current?.querySelector(`a[href="${activeHash}"]`);
       if (activeEl) moveLampTo(activeEl);
@@ -52,29 +53,21 @@ export default function NavBar() {
     if (activeEl) moveLampTo(activeEl);
   };
 
-  const navLinks = [
-    { href: '#what-is-it', label: 'The theatre' },
-    { href: '#worlds', label: 'The journey' },
-    { href: '#experience', label: 'Stories' },
-    { href: '#truck', label: 'About us' }
-  ];
-
   return (
     <div className="nav-wrapper">
-      <header className={`nav ${scrolled ? 'small' : ''}`} ref={navRef}>
-        <a className="brand" href="#" aria-label="Gaudiya Darshan, home">
+      <header className={`nav ${scrolled ? 'small' : ''}`}>
+        <a className="brand" href="#" aria-label="TheatreOnWheels — home">
           <span className="mark"><span className="flame"></span></span>
           <span className="brand-text">
-            <span className="brand-name">Gaudiya Darshan</span>
-            <span className="brand-sub">Theatre on wheels</span>
+            <span className="brand-name">TheatreOnWheels</span>
           </span>
         </a>
 
         <ul className="links" ref={linksRef} onMouseLeave={handleLinkLeave}>
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a 
-                href={link.href} 
+              <a
+                href={link.href}
                 aria-current={activeHash === link.href ? 'page' : undefined}
                 onMouseEnter={handleLinkHover}
                 onFocus={handleLinkHover}
@@ -89,28 +82,19 @@ export default function NavBar() {
 
         <div className="tools">
           <div className="lang" role="group" aria-label="Language">
-            {['EN', 'हिं', 'ଓଡ଼ି'].map(l => (
+            {['EN', 'हिं', 'ଓଡ଼ི'].map(l => (
               <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)}>
                 {l}
               </button>
             ))}
           </div>
-          <button 
+          <a className="ticket" href="#reserve">Reserve a Seat</a>
+          <button
             type="button"
-            className="sound" 
-            aria-pressed={soundOn} 
-            aria-label={soundOn ? 'Sound on' : 'Sound off'}
-            onClick={() => setSoundOn(!soundOn)}
-          >
-            <i></i><i></i><i></i><i></i>
-          </button>
-          <a className="ticket" href="#coming-soon">Reserve a seat</a>
-          <button 
-            type="button"
-            className="burger" 
-            aria-expanded={menuOpen} 
-            aria-controls="panel" 
-            aria-label="Menu"
+            className="burger"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-panel"
+            aria-label="Open menu"
             onClick={() => {
               setMenuOpen(!menuOpen);
               document.body.style.overflow = !menuOpen ? 'hidden' : '';
@@ -121,11 +105,11 @@ export default function NavBar() {
         </div>
       </header>
 
-      <div className={`panel ${menuOpen ? 'open' : ''}`} id="panel">
-        {navLinks.map((link) => (
-          <a 
-            key={link.href} 
-            className="big" 
+      <div className={`panel ${menuOpen ? 'open' : ''}`} id="mobile-panel">
+        {NAV_LINKS.map((link) => (
+          <a
+            key={link.href}
+            className="big"
             href={link.href}
             onClick={() => {
               setActiveHash(link.href);
@@ -144,10 +128,10 @@ export default function NavBar() {
               </button>
             ))}
           </div>
-          <a className="ticket" href="#coming-soon" onClick={() => {
-              setMenuOpen(false);
-              document.body.style.overflow = '';
-          }}>Reserve a seat</a>
+          <a className="ticket" href="#reserve" onClick={() => {
+            setMenuOpen(false);
+            document.body.style.overflow = '';
+          }}>Reserve a Seat</a>
         </div>
       </div>
     </div>

@@ -255,7 +255,7 @@ export default function Hero() {
       ref={rootRef}
       className={`hero tier-${tier} ${portrait ? 'is-portrait' : ''}`}
       data-lang={lang}
-      aria-label="Gaudiya Darshan"
+      aria-label="TheatreOnWheels"
     >
       <div className="hero__stage">
         <div className="hero__scene"><Scene L={L} reg={reg} /></div>

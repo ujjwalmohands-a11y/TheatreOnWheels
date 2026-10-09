@@ -1,60 +1,150 @@
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './pass.css';
 import Hero from './hero/Hero';
 import PrebookModal from './components/PrebookModal';
-
 import NavBar from './components/NavBar';
 
-// Reusable component to handle the scroll-in animation for each content box
-const AnimatedSection = ({ children, id, variant }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.15,
-  });
-
+/* ── Intersection-observer reveal ─────────────────────────────── */
+function useReveal(threshold = 0.12) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    if (inView) {
-      controls.start('visible');
-    }
-  }, [controls, inView]);
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
 
+/* ── Section wrapper with reveal ─────────────────────────────── */
+function Reveal({ children, className = '', delay = 0 }) {
+  const [ref, visible] = useReveal();
   return (
-    <section id={id} className={`scaffold-section${variant ? ` ${variant}-section` : ''}`}>
-      <motion.div
-        ref={ref}
-        className={`content-box container${variant ? ` ${variant}-box` : ''}`}
-        initial="hidden"
-        animate={controls}
-        variants={{
-          visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-          hidden: { opacity: 0, y: 40 }
-        }}
-      >
-        {children}
-      </motion.div>
-    </section>
+    <div
+      ref={ref}
+      className={`reveal-block${visible ? ' is-visible' : ''}${delay ? ` delay-${delay}` : ''} ${className}`}
+    >
+      {children}
+    </div>
   );
-};
+}
 
+/* ── Worlds data ─────────────────────────────────────────────── */
+const WORLDS = [
+  {
+    id: 'space',
+    title: 'Space Odyssey',
+    tagline: 'Zero gravity. Infinite wonder.',
+    img: '/images/world-space.jpg',
+    desc: 'Float through nebulae, witness a supernova, land on alien worlds without leaving your seat.',
+  },
+  {
+    id: 'ocean',
+    title: 'Deep Ocean',
+    tagline: 'Pressure. Darkness. Life.',
+    img: '/images/world-ocean.jpg',
+    desc: 'Descend into bioluminescent depths alongside creatures no human eye has ever seen.',
+  },
+  {
+    id: 'history',
+    title: 'Ancient India',
+    tagline: 'Where time stands still.',
+    img: '/images/world-history.jpg',
+    desc: 'Walk through golden temples, witness epic processions and feel the pulse of a civilisation.',
+  },
+  {
+    id: 'micro',
+    title: 'The Inner Universe',
+    tagline: 'Smaller than a thought.',
+    img: '/images/world-micro.jpg',
+    desc: 'Shrink to the scale of neurons, ride a heartbeat, witness the code of life unfold.',
+  },
+];
+
+/* ── Loading screen ──────────────────────────────────────────── */
+function LoadingScreen({ onDone }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 1600);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div className="loading-screen" id="loading-screen">
+      <div className="loading-wordmark">Gaudiya Darshan</div>
+      <div className="loading-bar" />
+    </div>
+  );
+}
+
+/* ── Sidebar navigation dots ─────────────────────────────────── */
+const SECTIONS = [
+  { id: 'hero', label: 'Arrival' },
+  { id: 'canvas', label: 'Canvas' },
+  { id: 'reserve', label: 'Reserve Pass' },
+];
+
+function SideNav() {
+  const [active, setActive] = useState('hero');
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+      },
+      { threshold: 0.4 }
+    );
+    SECTIONS.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <nav className="side-nav" aria-label="Section navigation">
+      {SECTIONS.map(s => (
+        <button
+          key={s.id}
+          className={`side-nav__dot${active === s.id ? ' is-active' : ''}`}
+          data-label={s.label}
+          aria-label={`Go to ${s.label}`}
+          onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      ))}
+    </nav>
+  );
+}
+
+/* ── App ──────────────────────────────────────────────────────── */
 export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [loadDone, setLoadDone] = useState(false);
   const [prebook, setPrebook] = useState(null);
+  const [selectedWorld, setSelectedWorld] = useState('space');
+
+  // Live ticket state
+  const [liveForm, setLiveForm] = useState({ name: '', city: '', phone: '', email: '' });
+
+  const handleLoadDone = useCallback(() => {
+    const el = document.getElementById('loading-screen');
+    if (el) el.classList.add('is-done');
+    setTimeout(() => setLoadDone(true), 650);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
     setPrebook({
-      name: (f.get('name') || '').toString().trim() || 'Guest',
-      city: (f.get('city') || '').toString().trim(),
-      world: (f.get('world') || '').toString(),
+      name: liveForm.name.trim() || 'Guest',
+      city: liveForm.city.trim(),
+      world: WORLDS.find(w => w.id === selectedWorld)?.title || selectedWorld,
     });
   };
 
   const handleConfirmed = (details) => {
-    // Pre-booking is only confirmed once the ticket is ripped.
     try {
       const all = JSON.parse(localStorage.getItem('tow_prebookings') || '[]');
       all.push({ ...details, at: new Date().toISOString() });
@@ -64,160 +154,226 @@ export default function App() {
 
   return (
     <>
-      <div className="blueprint-overlay"></div>
-      
+      {/* Loading */}
+      <LoadingScreen onDone={handleLoadDone} />
+
+      {/* Sidebar nav dots */}
+      <SideNav />
+
       <NavBar />
 
-      {/* 1. Hero — "Arrival" */}
-      <Hero />
+      {/* 1. Hero */}
+      <div id="hero">
+        <Hero />
+      </div>
 
       <main>
-
-        {/* 2. What Is It? */}
-        <AnimatedSection id="what-is-it">
-          <span className="section-label">SEC_02 // WHAT_IS</span>
-          <div className="status-badge"><span className="dot"></span> Vision Draft</div>
-          <h2>The Travelling Theatre</h2>
-          <ul className="blueprint-list">
-            <li>An immersive theatre inside a truck</li>
-            <li>One door. Many worlds.</li>
-            <li>Premium cinematic experience</li>
-            <li>Bringing the story to your city</li>
-          </ul>
-        </AnimatedSection>
-
-        {/* 3. The Worlds */}
-        <AnimatedSection id="worlds">
-          <span className="section-label">SEC_03 // THE_WORLDS</span>
-          <div className="status-badge"><span className="dot"></span> Concept Art Phase</div>
-          <h2>Explore The Worlds</h2>
-          <p>A shifting ambient bed and a new reality behind the door.</p>
-          <div className="worlds-grid">
-            {[
-              { title: 'Space Exploration', img: '/images/space.jpg' },
-              { title: 'Deep Ocean Expedition', img: '/images/ocean.jpg' },
-              { title: 'Inside the Human Body', img: '/images/space.jpg' },
-              { title: 'Time Travel Through History', img: '/images/ocean.jpg' },
-              { title: 'Journey to the Earth\'s Core', img: '/images/space.jpg' },
-              { title: 'Microscopic Universe', img: '/images/ocean.jpg' },
-              { title: 'Zero Gravity Adventure', img: '/images/space.jpg' },
-              { title: 'Climate Simulator', img: '/images/ocean.jpg' }
-            ].map((world, i) => (
-              <div key={i} className="world-tile">
-                <div className="world-art" style={{ backgroundImage: `url(${world.img})` }}></div>
-                <div className="world-label-bar">{world.title}</div>
+        {/* Blank Canvas Section — Ready for new sections and concepts */}
+        <section id="canvas" className="section canvas-section">
+          <div className="container">
+            <Reveal>
+              <div className="blank-canvas-container">
+                <span className="blank-canvas-tag">✦ Blank Canvas</span>
+                <h3 className="blank-canvas-heading">Clean Slate</h3>
+                <p className="blank-canvas-desc">
+                  Previous sections cleared. Ready to craft fresh designs, stories, and experiences from scratch.
+                </p>
               </div>
-            ))}
+            </Reveal>
           </div>
-        </AnimatedSection>
+        </section>
 
-        {/* 4. The Experience */}
-        <AnimatedSection id="experience">
-          <span className="section-label">SEC_04 // EXPERIENCE</span>
-          <div className="status-badge"><span className="dot"></span> Core Loop</div>
-          <h2>The Experience</h2>
-          <div className="journey-map">
-            <span>Arrive</span> &rarr; <span>Enter</span> &rarr; <span>Sit</span> &rarr; <span className="highlight-beat">Begin (World Reveals)</span> &rarr; <span>Step out</span>
-          </div>
-        </AnimatedSection>
+        {/* 2. Reserve — form ON the ticket */}
+        <section id="reserve" className="section ticket-section">
+          <div className="container">
+            <Reveal>
+              <span className="eyebrow">Early Access</span>
+              <h2 style={{ marginBottom: '12px' }}>Reserve your journey pass.</h2>
+              <p style={{ maxWidth: '44ch', marginBottom: '48px' }}>
+                No payment now. Fill in the fields below — your name appears on the ticket live as you type.
+                Tear the stub to confirm.
+              </p>
+            </Reveal>
 
-        {/* 5. The Truck */}
-        <AnimatedSection id="truck">
-          <span className="section-label">SEC_05 // TRUCK</span>
-          <div className="status-badge"><span className="dot"></span> Engineering In Progress</div>
-          <h2>The Truck</h2>
-          <div className="placeholder-image lg">
-            [ Basic Truck Visual/Render Placeholder ]
-          </div>
-          <ul className="blueprint-list grid-list">
-            <li>Exterior profile</li>
-            <li>Interior acoustic treatment</li>
-            <li>16-seat premium arrangement</li>
-            <li>Projection mapping setup</li>
-          </ul>
-        </AnimatedSection>
+            <Reveal delay={1}>
+              <form className="live-ticket" onSubmit={handleSubmit} id="reserve-form" noValidate>
+                {/* Physical Ticket Cutout Notches */}
+                <span className="ticket-notch notch-tl" aria-hidden="true" />
+                <span className="ticket-notch notch-tr" aria-hidden="true" />
+                <span className="ticket-notch notch-bl" aria-hidden="true" />
+                <span className="ticket-notch notch-br" aria-hidden="true" />
+                <span className="ticket-notch notch-perf-top" aria-hidden="true" />
+                <span className="ticket-notch notch-perf-bottom" aria-hidden="true" />
 
-        {/* 8. Coming Soon / Stay Updated */}
-        <AnimatedSection id="coming-soon" variant="pass">
-          <div className="pass-card-inner">
-            <div className="pass-serial">PASS // NO. 2026-001</div>
-            <div className="pass-head">
-              <span className="pass-eyebrow">[ EARLY ACCESS ]</span>
-              <h2>Reserve your journey pass</h2>
-              <p>Be among the first to step through the door when the theatre arrives.</p>
-            </div>
-          <form className="pass-form" onSubmit={handleSubmit}>
-            <label className="pass-field">
-              <span>Name</span>
-              <div className="pass-control">
-                <input name="name" type="text" placeholder="Your name" required />
-              </div>
-            </label>
-            <label className="pass-field">
-              <span>City</span>
-              <div className="pass-control">
-                <input name="city" type="text" placeholder="Your city" required />
-              </div>
-            </label>
-            <label className="pass-field">
-              <span>WhatsApp</span>
-              <div className="pass-control">
-                <input name="phone" type="tel" placeholder="+91 00000 00000" />
-              </div>
-            </label>
-            <label className="pass-field">
-              <span>Email</span>
-              <div className="pass-control">
-                <input name="email" type="email" placeholder="you@example.com" />
-              </div>
-            </label>
-            <label className="pass-field wide">
-              <span>Preferred world</span>
-              <div className="pass-control">
-                <select name="world" defaultValue="Space Exploration">
-                  <option>Space Exploration</option>
-                  <option>Deep Ocean Expedition</option>
-                  <option>Time Travel</option>
-                  <option>Surprise Me</option>
-                </select>
-              </div>
-            </label>
-            <div className="pass-action-area">
-              <button type="submit" className="pass-submit">REQUEST PASS &rarr;</button>
-            </div>
-          </form>
-          <div className="pass-footer-text">
-            No payment now. You will receive a private invitation when the doors open in your city.
-          </div>
-          </div>
-        </AnimatedSection>
+                <div className="ticket-perf">
+                  {/* Main Ticket Body */}
+                  <div className="ticket-main">
+                    {/* Top Presenter & Event Header matching ticket component */}
+                    <div className="ticket-header-strip">
+                      <span className="ticket-presenter">Theatre on Wheels</span>
+                      <span className="ticket-event-tag">
+                        {WORLDS.find(w => w.id === selectedWorld)?.title || 'Space Odyssey'}
+                      </span>
+                    </div>
 
-        {/* 9. Share / Follow */}
-        <AnimatedSection id="social">
-          <span className="section-label">SEC_09 // SOCIAL</span>
-          <div className="status-badge"><span className="dot"></span> Live</div>
-          <h2>Share / Follow</h2>
-          <p>Follow the journey.</p>
-          <div className="social-links">
-            <a href="#" className="btn-outline">Instagram</a>
-            <a href="#" className="btn-outline">WhatsApp</a>
+                    {/* Live Attendee Hero display matching Image 2's bold GUEST banner */}
+                    <div className="ticket-name-hero">
+                      <span className="ticket-name-hero__label">Ticket Holder</span>
+                      <div className={`ticket-name-hero__value${!liveForm.name ? ' is-guest' : ''}`}>
+                        {liveForm.name ? liveForm.name.toUpperCase() : 'GUEST'}
+                      </div>
+                    </div>
+
+                    {/* Sub-meta strip matching Image 2 */}
+                    <div className="ticket-sub-meta">
+                      <span>{(liveForm.city || 'Your City').toUpperCase()}</span>
+                      <span className="meta-dot">·</span>
+                      <span>PRE-BOOKING 2026</span>
+                    </div>
+
+                    {/* Input fields living inside the ticket */}
+                    <div className="ticket-fields">
+                      <div className="ticket-field">
+                        <label htmlFor="tf-name">Your Name</label>
+                        <input
+                          id="tf-name"
+                          type="text"
+                          name="name"
+                          placeholder="e.g. Maya Roy"
+                          required
+                          value={liveForm.name}
+                          onChange={e => setLiveForm(f => ({ ...f, name: e.target.value }))}
+                        />
+                      </div>
+                      <div className="ticket-field">
+                        <label htmlFor="tf-city">Your City</label>
+                        <input
+                          id="tf-city"
+                          type="text"
+                          name="city"
+                          placeholder="Where are you?"
+                          required
+                          value={liveForm.city}
+                          onChange={e => setLiveForm(f => ({ ...f, city: e.target.value }))}
+                        />
+                      </div>
+                      <div className="ticket-field">
+                        <label htmlFor="tf-world">Destination</label>
+                        <select
+                          id="tf-world"
+                          name="world"
+                          value={selectedWorld}
+                          onChange={e => setSelectedWorld(e.target.value)}
+                        >
+                          {WORLDS.map(w => (
+                            <option key={w.id} value={w.id}>
+                              {w.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="ticket-field">
+                        <label htmlFor="tf-phone">WhatsApp</label>
+                        <input
+                          id="tf-phone"
+                          type="tel"
+                          name="phone"
+                          placeholder="+91 00000 00000"
+                          value={liveForm.phone}
+                          onChange={e => setLiveForm(f => ({ ...f, phone: e.target.value }))}
+                        />
+                      </div>
+                      <div className="ticket-field full">
+                        <label htmlFor="tf-email">Email</label>
+                        <input
+                          id="tf-email"
+                          type="email"
+                          name="email"
+                          placeholder="you@example.com"
+                          value={liveForm.email}
+                          onChange={e => setLiveForm(f => ({ ...f, email: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="ticket-cta">
+                      <button type="submit" className="btn-ticket-submit" id="submit-ticket">
+                        Request Pass →
+                      </button>
+                      <span className="ticket-note">
+                        No payment now. Private invitation when the travelling theatre arrives.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Tear-off stub matching Image 2 */}
+                  <div className="ticket-stub">
+                    <span className="stub-watermark" aria-hidden="true">26</span>
+                    <span className="stub-admit-text">ADMIT ONE</span>
+                    <div className="stub-footer">
+                      <span className="stub-serial">#TOW-2026</span>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </Reveal>
           </div>
-        </AnimatedSection>
+        </section>
+
       </main>
 
-      {/* 10. Footer */}
-      <footer id="footer" className="scaffold-section footer">
-        <div className="content-box">
-          <div className="footer-links">
-            <a href="#">Gaudiya Darshan</a>
-            <a href="#">Contact</a>
-            <a href="#">Instagram</a>
-            <a href="#">Host Us</a>
-            <a href="#">Privacy</a>
+      {/* Footer */}
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-grid">
+            <div>
+              <div className="footer-brand">TheatreOnWheels</div>
+              <p style={{ marginTop: '16px', fontSize: '13px', lineHeight: '1.7' }}>
+                A travelling immersive theatre. One truck, many worlds.
+              </p>
+            </div>
+            <div>
+              <div className="footer-col-title">Navigation</div>
+              <ul className="footer-links">
+                <li><a href="#hero">Arrival</a></li>
+                <li><a href="#canvas">Canvas</a></li>
+                <li><a href="#reserve">Reserve Pass</a></li>
+              </ul>
+            </div>
+            <div>
+              <div className="footer-col-title">Connect</div>
+              <ul className="footer-links">
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">WhatsApp</a></li>
+                <li><a href="#">YouTube</a></li>
+                <li><a href="#">Host Us</a></li>
+              </ul>
+            </div>
+            <div>
+              <div className="footer-col-title">Trust</div>
+              <ul className="footer-links">
+                <li><a href="#">IIT Bhubaneswar</a></li>
+                <li><a href="#">Startup India</a></li>
+                <li><a href="#">Startup Odisha</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <div className="footer-legal">
+              <span className="footer-trademark">
+                TheatreOnWheels is a trademark of Gaudya Darshan Solutions Private Limited.
+              </span>
+              <span className="footer-copy">© 2026 Gaudya Darshan. All rights reserved.</span>
+            </div>
+            <div className="footer-links" style={{ flexDirection: 'row', gap: '24px' }}>
+              <a href="#">Privacy</a>
+              <a href="#">Contact</a>
+            </div>
           </div>
         </div>
       </footer>
 
+      {/* Ticket confirmation modal */}
       <AnimatePresence>
         {prebook && (
           <PrebookModal

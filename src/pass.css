@@ -1,306 +1,108 @@
-/* Editorial Luxury Minimalist — Premium Theatre Pass */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+﻿/* ================================================================
+   Theatre on Wheels — Ticket & Modal Styles
+   Uses global type tokens from index.css (no extra font imports)
+   ================================================================ */
 
-:root {
-  --p-bg: #0B0C10; /* Deep Obsidian Charcoal */
-  --p-card-bg: #12141A;
-  --p-card-border: #2A2D38;
-  --p-headline: #E6E8EC; /* Soft off-white */
-  --p-label: #9CA3AF; /* Muted gold-grey */
-  --p-accent: #C5A059; /* Warm brass/gold */
-  --p-input-border: #21252F;
-  --p-serif: "Cormorant Garamond", Georgia, serif;
-  --p-sans: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
-}
-
-.scaffold-section.pass-section {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--p-bg) !important;
-  background-image: none !important;
-  padding: 120px 20px;
-  position: relative;
-  border: none !important;
-}
-
-.scaffold-section.pass-section::before,
-.scaffold-section.pass-section::after {
-  display: none !important; /* Remove all background noise/gradients */
-}
-
-.content-box.pass-box {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-  background: var(--p-card-bg) !important;
-  border: 1px solid var(--p-card-border) !important;
-  padding: 60px 72px 50px;
-  border-radius: 4px !important; /* Crisp structured card */
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4) !important;
-  font-family: var(--p-sans);
-  position: relative;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-/* Clear out original pseudo-elements for clean look */
-.content-box.pass-box::before,
-.content-box.pass-box::after {
-  display: none !important;
-}
-.content-box.pass-box:hover {
-  border-color: var(--p-card-border) !important;
-}
-
-/* Registration marks at corners, using separate divs or styling a wrapper */
-.pass-card-inner {
-  position: relative;
-}
-.pass-card-inner::before {
-  content: "+";
-  position: absolute;
-  top: -46px; left: -52px;
-  color: #353945;
-  font-size: 14px;
-  font-family: monospace;
-}
-.pass-card-inner::after {
-  content: "+";
-  position: absolute;
-  top: -46px; right: -52px;
-  color: #353945;
-  font-size: 14px;
-  font-family: monospace;
-}
-
-@media (max-width: 640px) {
-  .pass-card-inner::before,
-  .pass-card-inner::after {
-    display: none;
-  }
-}
-
-.pass-serial {
-  position: absolute;
-  top: -40px; right: 0;
-  font-family: var(--p-sans);
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  color: #555A66;
-}
-
-.pass-head {
-  text-align: center;
-  margin-bottom: 50px;
-  position: relative;
-  padding-bottom: 30px;
-}
-
-.pass-head::after {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 1px;
-  background-color: var(--p-accent);
-  opacity: 0.5;
-}
-
-.pass-eyebrow {
-  display: inline-block;
-  font: 500 0.7rem/1 var(--p-sans);
-  letter-spacing: 0.12em;
-  color: var(--p-accent);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-}
-
-.pass-box h2 {
-  font-family: var(--p-serif);
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
-  font-weight: 500;
-  color: var(--p-headline);
-  margin: 0 0 16px;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  text-transform: none;
-}
-
-.pass-box .pass-head p {
-  color: var(--p-label);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  max-width: 420px;
-  margin: 0 auto;
-}
-
-.pass-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px 36px;
-}
-
-.pass-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pass-field.wide {
-  grid-column: 1 / -1;
-}
-
-.pass-field span {
-  font: 500 0.68rem/1 var(--p-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--p-label);
-  transition: color 0.3s ease;
-}
-
-.pass-field:focus-within span {
-  color: var(--p-accent);
-}
-
-.pass-control {
-  position: relative;
-}
-
-.pass-field input,
-.pass-field select {
-  width: 100%;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  border-bottom: 1px solid var(--p-input-border) !important;
-  padding: 8px 0 12px !important;
-  color: var(--p-headline);
-  font: 400 1.05rem var(--p-sans);
-  outline: none;
-  transition: border-color 0.3s ease;
-  appearance: none;
-  -webkit-appearance: none;
-  box-shadow: none !important;
-}
-
-.pass-field input::placeholder {
-  color: #4B5563;
-}
-
-.pass-field input:focus,
-.pass-field select:focus {
-  border-bottom-color: var(--p-accent) !important;
-}
-
-.pass-field select {
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23C5A059' stroke-width='1.5'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right center !important;
-  padding-right: 24px !important;
-}
-
-.pass-field select option {
-  background: var(--p-card-bg);
-  color: var(--p-headline);
-}
-
-.pass-action-area {
-  grid-column: 1 / -1;
-  text-align: center;
-  margin-top: 10px;
-}
-
-.pass-submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 42px;
-  border: 1px solid var(--p-accent) !important;
-  background: transparent !important;
-  color: var(--p-accent) !important;
-  font: 600 0.85rem var(--p-sans) !important;
-  letter-spacing: 0.15em !important;
-  text-transform: uppercase !important;
-  cursor: pointer;
-  transition: all 0.3s ease !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-.pass-submit:hover {
-  background: var(--p-accent) !important;
-  color: #0B0C10 !important;
-}
-
-.pass-submit::after {
-  display: none !important;
-}
-
-.pass-footer-text {
-  text-align: center;
-  margin-top: 40px;
-  font-family: var(--p-serif);
-  font-size: 0.95rem;
-  color: #555A66;
-  font-style: italic;
-}
-
-@media (max-width: 640px) {
-  .content-box.pass-box {
-    padding: 50px 30px 40px;
-  }
-  .pass-form {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-}
-
-/* ---------- Ticket modal ---------- */
+/* ── Ticket confirmation modal ────────────────────────────────── */
 .tk-modal {
   position: fixed; inset: 0; z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 30px; padding: 24px; font-family: var(--p-sans);
-  background: rgba(11, 12, 16, 0.95) !important;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  gap: 28px; padding: 24px;
+  background: rgba(9, 8, 15, 0.96);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
 }
+
 .tk-close {
-  position: absolute; top: 30px; right: 30px; cursor: pointer;
-  width: 40px; height: 40px; border-radius: 50%;
+  position: absolute; top: 28px; right: 28px; cursor: pointer;
+  width: 42px; height: 42px; border-radius: 50%;
   display: grid; place-items: center;
-  color: var(--p-headline); font-size: 1.2rem;
-  background: transparent !important;
-  border: 1px solid var(--p-card-border) !important;
+  color: var(--c-cream); font-size: 1.1rem;
+  background: transparent;
+  border: 1px solid var(--c-line-md);
   transition: all 0.3s ease;
+  font-family: var(--f-body);
 }
-.tk-close:hover { border-color: var(--p-accent) !important; color: var(--p-accent) !important; transform: rotate(90deg) !important; }
-.tk-copy { text-align: center; color: var(--p-headline); max-width: 560px; }
+.tk-close:hover {
+  border-color: var(--c-brass);
+  color: var(--c-brass);
+  transform: rotate(90deg);
+}
+
+.tk-copy {
+  text-align: center;
+  color: var(--c-cream);
+  max-width: 540px;
+}
+
 .tk-eyebrow {
-  font: 500 0.7rem/1 var(--p-sans); letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--p-accent);
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-brass);
+  display: block;
+  margin-bottom: 12px;
 }
+
 .tk-title {
-  font-family: var(--p-serif); font-weight: 500;
-  font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.1; margin-top: 14px; color: var(--p-headline);
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  line-height: 1.12;
+  margin-top: 10px;
+  color: var(--c-cream);
 }
-.tk-sub { margin-top: 12px; color: var(--p-label); font-size: 0.95rem; }
+
+.tk-sub {
+  margin-top: 12px;
+  color: var(--c-muted);
+  font-size: clamp(15px, 1.3vw, 17px);
+  font-family: var(--f-body);
+  line-height: 1.65;
+}
+
 .tk-hint {
-  position: absolute; bottom: -42px; text-align: center; pointer-events: none;
-  font: 500 0.65rem var(--p-sans); letter-spacing: 0.1em; text-transform: uppercase; color: #555A66;
+  position: absolute;
+  bottom: -40px;
+  text-align: center;
+  pointer-events: none;
+  font-family: var(--f-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243,230,200,0.3);
 }
+
 .tk-link {
-  cursor: pointer; background: none; border: 0;
-  color: var(--p-label); font: 500 0.85rem var(--p-sans);
-  text-decoration: underline; text-underline-offset: 4px; transition: color .25s;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  color: var(--c-muted);
+  font-family: var(--f-body);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.25s;
 }
-.tk-link:hover { color: var(--p-headline); }
+.tk-link:hover { color: var(--c-cream); }
+
 .tk-done {
-  cursor: pointer; border: 1px solid var(--p-accent) !important; padding: 16px 36px; background: transparent !important;
-  font: 500 0.8rem var(--p-sans) !important; letter-spacing: 0.15em !important; text-transform: uppercase;
-  color: var(--p-accent) !important; transition: all 0.3s ease !important;
-  box-shadow: none !important; border-radius: 0 !important;
+  cursor: pointer;
+  border: 1px solid var(--c-brass);
+  padding: 16px 40px;
+  background: transparent;
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-brass);
+  transition: all 0.3s ease;
+  border-radius: 2px;
 }
-.tk-done:hover { background: var(--p-accent) !important; color: #0B0C10 !important; transform: none !important; }
+.tk-done:hover {
+  background: var(--c-brass);
+  color: var(--c-ink);
+}

@@ -62,15 +62,14 @@ export default function PrebookModal({ name, city, world, onConfirmed, onClose }
     }, 650);
   };
 
-  // Static texture (speed 0) so both halves of the ticket match pixel-for-pixel.
   const ticketProps = {
     name,
-    presenter: "Theatre on Wheels presents",
+    presenter: "Theatre on Wheels",
     event: world,
     venue: city || "Your city",
-    dates: "Pre-booked",
-    stubText: "Admit one",
-    watermark: "2026",
+    dates: "Pre-Booking 2026",
+    stubText: "Admit One",
+    watermark: "26",
     width,
     tilt: false as const,
     texture: { ...TICKET_TEXTURE, speed: 0 },

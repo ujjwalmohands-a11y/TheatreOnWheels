@@ -49,7 +49,7 @@ export const SCENE_TIMES = {
 
 export const COPY = {
   en: {
-    name: 'Gaudiya Darshan',
+    name: 'TheatreOnWheels',
     tag: 'Theatre on Wheels',
     lines: ['Something is', 'on its way.'],
     h1: 'Something is on its way.',
