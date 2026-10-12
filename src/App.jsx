@@ -5,6 +5,8 @@ import './pass.css';
 import Hero from './hero/Hero';
 import PrebookModal from './components/PrebookModal';
 import NavBar from './components/NavBar';
+import PlacesOfLaunch from './components/PlacesOfLaunch';
+import PrebookPass from './components/PrebookPass';
 
 /* ── Intersection-observer reveal ─────────────────────────────── */
 function useReveal(threshold = 0.12) {
@@ -85,7 +87,7 @@ function LoadingScreen({ onDone }) {
 /* ── Sidebar navigation dots ─────────────────────────────────── */
 const SECTIONS = [
   { id: 'hero', label: 'Arrival' },
-  { id: 'canvas', label: 'Canvas' },
+  { id: 'places-of-launch', label: 'Places of Launch' },
   { id: 'reserve', label: 'Reserve Pass' },
 ];
 
@@ -124,15 +126,17 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [loadDone, setLoadDone] = useState(false);
   const [prebook, setPrebook] = useState(null);
-  const [selectedWorld, setSelectedWorld] = useState('space');
-
-  // Live ticket state
-  const [liveForm, setLiveForm] = useState({ name: '', city: '', phone: '', email: '' });
+  const [selectedWorld, setSelectedWorld] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
 
   const handleLoadDone = useCallback(() => {
     const el = document.getElementById('loading-screen');
     if (el) el.classList.add('is-done');
     setTimeout(() => setLoadDone(true), 650);
+  }, []);
+
+  const handleSelectCityForPass = useCallback((cityName) => {
+    setSelectedCity(cityName);
   }, []);
 
   const handleSubmit = (e) => {
@@ -168,20 +172,10 @@ export default function App() {
       </div>
 
       <main>
-        {/* Blank Canvas Section — Ready for new sections and concepts */}
-        <section id="canvas" className="section canvas-section">
-          <div className="container">
-            <Reveal>
-              <div className="blank-canvas-container">
-                <span className="blank-canvas-tag">✦ Blank Canvas</span>
-                <h3 className="blank-canvas-heading">Clean Slate</h3>
-                <p className="blank-canvas-desc">
-                  Previous sections cleared. Ready to craft fresh designs, stories, and experiences from scratch.
-                </p>
-              </div>
-            </Reveal>
-          </div>
-        </section>
+        {/* 2. Places of Launch Section — Route Map & Demand Ballot */}
+        <Reveal>
+          <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
+        </Reveal>
 
         {/* 2. Reserve — form ON the ticket */}
         <section id="reserve" className="section ticket-section">
@@ -196,126 +190,17 @@ export default function App() {
             </Reveal>
 
             <Reveal delay={1}>
-              <form className="live-ticket" onSubmit={handleSubmit} id="reserve-form" noValidate>
-                {/* Physical Ticket Cutout Notches */}
-                <span className="ticket-notch notch-tl" aria-hidden="true" />
-                <span className="ticket-notch notch-tr" aria-hidden="true" />
-                <span className="ticket-notch notch-bl" aria-hidden="true" />
-                <span className="ticket-notch notch-br" aria-hidden="true" />
-                <span className="ticket-notch notch-perf-top" aria-hidden="true" />
-                <span className="ticket-notch notch-perf-bottom" aria-hidden="true" />
-
-                <div className="ticket-perf">
-                  {/* Main Ticket Body */}
-                  <div className="ticket-main">
-                    {/* Top Presenter & Event Header matching ticket component */}
-                    <div className="ticket-header-strip">
-                      <span className="ticket-presenter">Theatre on Wheels</span>
-                      <span className="ticket-event-tag">
-                        {WORLDS.find(w => w.id === selectedWorld)?.title || 'Space Odyssey'}
-                      </span>
-                    </div>
-
-                    {/* Live Attendee Hero display matching Image 2's bold GUEST banner */}
-                    <div className="ticket-name-hero">
-                      <span className="ticket-name-hero__label">Ticket Holder</span>
-                      <div className={`ticket-name-hero__value${!liveForm.name ? ' is-guest' : ''}`}>
-                        {liveForm.name ? liveForm.name.toUpperCase() : 'GUEST'}
-                      </div>
-                    </div>
-
-                    {/* Sub-meta strip matching Image 2 */}
-                    <div className="ticket-sub-meta">
-                      <span>{(liveForm.city || 'Your City').toUpperCase()}</span>
-                      <span className="meta-dot">·</span>
-                      <span>PRE-BOOKING 2026</span>
-                    </div>
-
-                    {/* Input fields living inside the ticket */}
-                    <div className="ticket-fields">
-                      <div className="ticket-field">
-                        <label htmlFor="tf-name">Your Name</label>
-                        <input
-                          id="tf-name"
-                          type="text"
-                          name="name"
-                          placeholder="e.g. Maya Roy"
-                          required
-                          value={liveForm.name}
-                          onChange={e => setLiveForm(f => ({ ...f, name: e.target.value }))}
-                        />
-                      </div>
-                      <div className="ticket-field">
-                        <label htmlFor="tf-city">Your City</label>
-                        <input
-                          id="tf-city"
-                          type="text"
-                          name="city"
-                          placeholder="Where are you?"
-                          required
-                          value={liveForm.city}
-                          onChange={e => setLiveForm(f => ({ ...f, city: e.target.value }))}
-                        />
-                      </div>
-                      <div className="ticket-field">
-                        <label htmlFor="tf-world">Destination</label>
-                        <select
-                          id="tf-world"
-                          name="world"
-                          value={selectedWorld}
-                          onChange={e => setSelectedWorld(e.target.value)}
-                        >
-                          {WORLDS.map(w => (
-                            <option key={w.id} value={w.id}>
-                              {w.title}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="ticket-field">
-                        <label htmlFor="tf-phone">WhatsApp</label>
-                        <input
-                          id="tf-phone"
-                          type="tel"
-                          name="phone"
-                          placeholder="+91 00000 00000"
-                          value={liveForm.phone}
-                          onChange={e => setLiveForm(f => ({ ...f, phone: e.target.value }))}
-                        />
-                      </div>
-                      <div className="ticket-field full">
-                        <label htmlFor="tf-email">Email</label>
-                        <input
-                          id="tf-email"
-                          type="email"
-                          name="email"
-                          placeholder="you@example.com"
-                          value={liveForm.email}
-                          onChange={e => setLiveForm(f => ({ ...f, email: e.target.value }))}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="ticket-cta">
-                      <button type="submit" className="btn-ticket-submit" id="submit-ticket">
-                        Request Pass →
-                      </button>
-                      <span className="ticket-note">
-                        No payment now. Private invitation when the travelling theatre arrives.
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Tear-off stub matching Image 2 */}
-                  <div className="ticket-stub">
-                    <span className="stub-watermark" aria-hidden="true">26</span>
-                    <span className="stub-admit-text">ADMIT ONE</span>
-                    <div className="stub-footer">
-                      <span className="stub-serial">#TOW-2026</span>
-                    </div>
-                  </div>
-                </div>
-              </form>
+              <PrebookPass
+                initialCity={selectedCity}
+                selectedWorld={WORLDS.find((w) => w.id === selectedWorld)?.title || ''}
+                worlds={WORLDS}
+                onWorldChange={(worldTitle) => {
+                  const match = WORLDS.find((w) => w.title === worldTitle);
+                  if (match) setSelectedWorld(match.id);
+                  else setSelectedWorld('');
+                }}
+                onPrebooked={handleConfirmed}
+              />
             </Reveal>
           </div>
         </section>
@@ -336,7 +221,7 @@ export default function App() {
               <div className="footer-col-title">Navigation</div>
               <ul className="footer-links">
                 <li><a href="#hero">Arrival</a></li>
-                <li><a href="#canvas">Canvas</a></li>
+                <li><a href="#places-of-launch">Places of Launch</a></li>
                 <li><a href="#reserve">Reserve Pass</a></li>
               </ul>
             </div>

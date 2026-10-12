@@ -1,0 +1,1309 @@
+/* ==========================================================================
+   Theatre on Wheels — Pre-booking Pass Component Styles
+   Radiant sunset glow, high-contrast readable inputs, living animations.
+   Zero frame drops: GPU-composited CSS animations, no heavy SVG filters.
+   No 3D mouse tilt.
+   Prominent, high-contrast "TEAR HERE" action badge.
+   ========================================================================== */
+
+:root {
+  --po-ink: #140500;
+  --po-ink-soft: #381204;
+  --po-peach: #FFD3A6;
+  --po-orange-1: #DE5A15;
+  --po-orange-2: #E86A1E;
+  --po-orange-3: #ED7B28;
+  --po-orange-4: #F28C38;
+}
+
+/* ── Container Wrap with Ambient Golden Halo ─────────────────── */
+.po-wrap {
+  width: 100%;
+  max-width: 950px;
+  margin-inline: auto;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+}
+
+.po-wrap *,
+.po-wrap *::before,
+.po-wrap *::after {
+  box-sizing: border-box;
+}
+
+/* Living ambient warm breathing glow behind ticket */
+.po-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -24px -36px;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(242, 140, 56, 0.28) 0%, transparent 72%);
+  pointer-events: none;
+  z-index: -1;
+  animation: po-halo-breathe 5s ease-in-out infinite alternate;
+}
+
+@keyframes po-halo-breathe {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* ── Flat Ticket Shell with Living Radiant Sunset Glow ───────── */
+.po-ticket {
+  position: relative;
+  overflow: visible;
+  color: var(--po-ink);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse 75% 65% at 85% 15%, rgba(255, 240, 218, 0.92) 0%, rgba(255, 195, 135, 0.52) 32%, transparent 68%),
+    radial-gradient(circle at 10% 90%, rgba(255, 165, 75, 0.42) 0%, transparent 45%),
+    linear-gradient(135deg, #DE5A15 0%, #E86A1E 38%, #ED7B28 72%, #F28C38 100%);
+  display: flex;
+  min-height: 410px;
+  border: 1.5px solid rgba(255, 230, 195, 0.45);
+  box-shadow:
+    0 26px 60px -10px rgba(222, 90, 21, 0.48),
+    0 0 45px rgba(255, 165, 70, 0.24),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+  animation: po-alive-glow 6s ease-in-out infinite alternate;
+}
+
+.po-ticket.is-tearing {
+  overflow: hidden;
+}
+
+@keyframes po-alive-glow {
+  0% {
+    box-shadow:
+      0 26px 60px -10px rgba(222, 90, 21, 0.48),
+      0 0 40px rgba(255, 165, 70, 0.22),
+      0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+  100% {
+    box-shadow:
+      0 32px 75px -8px rgba(222, 90, 21, 0.62),
+      0 0 65px rgba(255, 180, 85, 0.38),
+      0 4px 18px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Twinkling Cosmic Stars (Hardware-accelerated CSS opacity, 60fps) */
+.po-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    radial-gradient(1.6px 1.6px at 62% 14%, #fff 50%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 86% 9%, #fff 50%, transparent 100%),
+    radial-gradient(1.6px 1.6px at 93% 34%, #fff 50%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 72% 38%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 52% 6%, #fff 50%, transparent 100%),
+    radial-gradient(1.3px 1.3px at 28% 18%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 15% 12%, #fff 50%, transparent 100%);
+  animation: po-star-twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes po-star-twinkle {
+  0% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+  100% { opacity: 0.45; }
+}
+
+/* ── Main Ticket Body (Left 72%) ─────────────────────────────── */
+.po-main {
+  flex: 1 1 72%;
+  padding: clamp(22px, 3.4vw, 34px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header strip */
+.po-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.po-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+}
+
+.po-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(20, 5, 0, 0.16);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  border: 1px solid rgba(255, 211, 166, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.po-pill.is-empty {
+  opacity: 0.72;
+  border-style: dashed;
+}
+
+/* Living Pulsing Dot */
+.po-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--po-ink);
+  animation: po-dot-pulse 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes po-dot-pulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(20, 5, 0, 0.65);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(20, 5, 0, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(20, 5, 0, 0);
+  }
+}
+
+/* Attendee Hero */
+.po-hero {
+  margin-bottom: 18px;
+}
+
+.po-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--po-ink-soft);
+  margin-bottom: 2px;
+}
+
+.po-holder {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(20, 5, 0, 0.42);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.25s ease;
+}
+
+.po-holder.filled {
+  color: var(--po-ink);
+}
+
+.po-holder span {
+  display: inline-block;
+}
+
+.po-holder .pop {
+  animation: po-letter-pop 0.4s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes po-letter-pop {
+  from {
+    opacity: 0;
+    transform: translateY(0.25em) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.po-route {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--po-ink-soft);
+  margin-top: 4px;
+}
+
+.po-route i {
+  opacity: 0.55;
+  font-style: normal;
+}
+
+/* ── Redesigned High-Contrast Info Filling Form ──────────────── */
+.po-form {
+  margin-top: auto;
+}
+
+.po-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px 18px;
+}
+
+.po-grid .po-field:nth-child(4) {
+  grid-column: 1 / 2;
+}
+
+.po-grid .po-field:nth-child(5) {
+  grid-column: 2 / 4;
+}
+
+.po-field {
+  position: relative;
+  min-width: 0;
+}
+
+/* Bold, Highly Visible Field Labels */
+.po-field label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  margin-bottom: 5px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* High-Contrast, Apple-Grade Input Slots */
+.po-field input {
+  display: block;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 248, 238, 0.45);
+  border: 1.5px solid rgba(20, 5, 0, 0.35);
+  border-radius: 9px;
+  outline: 0;
+  color: #120400;
+  font: 600 14px/1.3 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'DM Sans', sans-serif;
+  padding: 8px 12px;
+  min-height: 40px;
+  box-shadow: inset 0 1px 2px rgba(20, 5, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Clear, Apple-Grade Placeholders */
+.po-field input::placeholder {
+  color: rgba(20, 5, 0, 0.58);
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* Interactive Hover & Focus State */
+.po-field input:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(20, 5, 0, 0.55);
+}
+
+.po-field input:focus {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: #120400;
+  box-shadow:
+    0 0 0 3px rgba(20, 5, 0, 0.16),
+    0 4px 12px rgba(255, 211, 166, 0.5);
+  transform: translateY(-1px);
+}
+
+.po-field:focus-within label {
+  color: #000;
+  transform: translateX(2px);
+}
+
+/* ── Apple-Style Minimal Destination Selector ────────────────── */
+.po-apple-select-wrap {
+  position: relative;
+  z-index: 20;
+}
+
+.po-apple-select-wrap:has(.is-open) {
+  z-index: 50;
+}
+
+.po-apple-select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 248, 238, 0.45);
+  border: 1.5px solid rgba(20, 5, 0, 0.35);
+  border-radius: 9px;
+  outline: 0;
+  color: #120400;
+  font: 600 14px/1.3 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'DM Sans', sans-serif;
+  padding: 8px 12px;
+  min-height: 40px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(20, 5, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  text-align: left;
+}
+
+.po-apple-select-btn.is-placeholder .po-apple-select-val {
+  color: rgba(20, 5, 0, 0.58);
+  font-weight: 500;
+}
+
+.po-apple-select-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(20, 5, 0, 0.55);
+}
+
+.po-apple-select-btn:focus-visible,
+.po-apple-select-btn.is-open {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: #120400;
+  box-shadow:
+    0 0 0 3px rgba(20, 5, 0, 0.16),
+    0 4px 12px rgba(255, 211, 166, 0.5);
+  transform: translateY(-1px);
+}
+
+.po-apple-select-icon {
+  flex-shrink: 0;
+  color: var(--po-ink);
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-left: 8px;
+}
+
+.po-apple-select-icon.is-open {
+  transform: rotate(180deg);
+}
+
+/* Apple Popover Menu: Opens upwards to avoid card cutoff & right-aligned within ticket */
+.po-apple-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  top: auto;
+  right: 0;
+  left: auto;
+  width: max(100%, 245px);
+  max-width: 275px;
+  background: rgba(255, 252, 248, 0.96);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 13px;
+  padding: 6px;
+  z-index: 100;
+  box-shadow:
+    0 -16px 36px -6px rgba(20, 5, 0, 0.28),
+    0 4px 14px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  animation: po-apple-menu-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom right;
+}
+
+@keyframes po-apple-menu-in {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.po-apple-menu-header {
+  padding: 4px 10px 6px;
+  border-bottom: 1px solid rgba(20, 5, 0, 0.08);
+  margin-bottom: 4px;
+}
+
+.po-apple-menu-header span {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(20, 5, 0, 0.45);
+}
+
+.po-apple-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.po-apple-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.po-apple-option:hover {
+  background: rgba(222, 90, 21, 0.12);
+}
+
+.po-apple-option:active {
+  transform: scale(0.985);
+}
+
+.po-apple-option.is-selected {
+  background: rgba(222, 90, 21, 0.18);
+}
+
+.po-apple-option-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.po-apple-option-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #140500;
+  line-height: 1.25;
+}
+
+.po-apple-option-sub {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(20, 5, 0, 0.58);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.po-apple-check {
+  flex-shrink: 0;
+  color: #DE5A15;
+  margin-left: 8px;
+}
+
+/* Error Highlight */
+.po-field.is-err input,
+.po-apple-select-wrap.is-err .po-apple-select-btn {
+  border-color: #8C1000;
+  background: rgba(255, 220, 220, 0.55);
+}
+
+.po-field.is-err label,
+.po-apple-select-wrap.is-err label {
+  color: #8C1000;
+}
+
+/* ── Actions Guidance Strip (Clean, Minimal & Hero-Focused) ─── */
+.po-actions {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.po-tear-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 800 11px/1 'DM Sans', -apple-system, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  background: rgba(20, 5, 0, 0.12);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 5, 0, 0.2);
+  backdrop-filter: blur(4px);
+  user-select: none;
+}
+
+.po-hint-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #DE5A15;
+  box-shadow: 0 0 8px #DE5A15;
+  animation: po-dot-pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.po-hint-arr {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+  animation: po-hint-bounce 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes po-hint-bounce {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(4px); }
+}
+
+.po-note {
+  font-size: 11.5px;
+  color: var(--po-ink-soft);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ── Perforation Divider & Die-Cut Notches ───────────────────── */
+.po-perf-seam {
+  width: 0;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.po-perf-line {
+  width: 0;
+  height: 100%;
+  border-left: 2px dashed rgba(20, 5, 0, 0.45);
+}
+
+.po-notch {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #07050f; /* Match section background */
+  z-index: 5;
+  pointer-events: none;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.po-notch.notch-top {
+  top: -12px;
+}
+
+.po-notch.notch-bottom {
+  bottom: -12px;
+}
+
+/* ── Right Tear Stub with Prominent "TEAR HERE" Action ───────── */
+.po-stub {
+  flex: 0 0 230px;
+  max-width: 230px;
+  background: rgba(20, 5, 0, 0.08);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  user-select: none;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.po-stub:hover {
+  background: rgba(20, 5, 0, 0.13);
+}
+
+.po-stub-admit {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid rgba(20, 5, 0, 0.35);
+  width: 100%;
+}
+
+.po-stub-mid {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.po-stub-dest {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--po-ink);
+}
+
+.po-stub-barcode {
+  width: 130px;
+  height: 38px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--po-ink) 0 2px,
+    transparent 2px 4px,
+    var(--po-ink) 4px 6px,
+    transparent 6px 9px,
+    var(--po-ink) 9px 12px,
+    transparent 12px 14px,
+    var(--po-ink) 14px 17px,
+    transparent 17px 18px
+  );
+  opacity: 0.9;
+}
+
+.po-stub-serial {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--po-ink-soft);
+  text-transform: uppercase;
+}
+
+/* ── Clearly Visible, High-Contrast "TEAR HERE" Badge ────────── */
+.po-tear-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1E0A03;
+  color: var(--po-peach);
+  padding: 11px 18px;
+  border-radius: 8px;
+  border: 1.5px dashed #FFD3A6;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 10, 3, 0.55), 0 0 10px rgba(255, 211, 166, 0.2);
+  transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 170px;
+}
+
+.po-tear-icon {
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.po-tear-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.po-stub:hover .po-tear-badge,
+.po-tear-badge:hover {
+  transform: translateY(-2px);
+  background: #0E0300;
+  box-shadow: 0 6px 20px rgba(30, 10, 3, 0.7), 0 0 16px rgba(255, 211, 166, 0.35);
+}
+
+.po-stub:hover .po-tear-icon,
+.po-tear-badge:hover .po-tear-icon {
+  animation: po-scissor-snip 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes po-scissor-snip {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(-20deg) scale(1.15); }
+}
+
+.po-tear-badge:active {
+  transform: translateY(0);
+}
+
+/* ── 60FPS Hardware-Accelerated Tearing Animation ────────────── */
+.po-ticket.is-tearing .po-stub {
+  animation: po-fast-rip 0.65s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes po-fast-rip {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: translate3d(15px, 10px, 0) rotate(3deg);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translate3d(60px, 35px, 0) rotate(12deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(100px, 60px, 0) rotate(18deg);
+    opacity: 0;
+  }
+}
+
+/* ── Confirmed View: Rich, Radiant, Never Blank ──────────────── */
+.po-confirmed-view {
+  width: 100%;
+  padding: clamp(24px, 3.5vw, 36px) clamp(24px, 4vw, 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  position: relative;
+  z-index: 2;
+  animation: po-fade-in 0.4s ease both;
+}
+
+/* Watermark in background */
+.po-watermark-bg {
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 220px;
+  font-weight: 700;
+  color: rgba(20, 5, 0, 0.06);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── Confirmed View: Minimal Text, SVG Driven, Infinite Flow Lines ── */
+.po-confirmed-view {
+  width: 100%;
+  padding: clamp(22px, 3.2vw, 32px) clamp(22px, 3.5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  position: relative;
+  z-index: 2;
+  animation: po-fade-in 0.35s ease both;
+}
+
+/* Watermark in background */
+.po-watermark-bg {
+  position: absolute;
+  top: 50%;
+  right: 18%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 210px;
+  font-weight: 700;
+  color: rgba(20, 5, 0, 0.05);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Top Row: Animated SVG Checkmark Seal */
+.po-confirmed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.po-check-seal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.po-check-svg {
+  width: 36px;
+  height: 36px;
+}
+
+.po-check-circle {
+  stroke: var(--po-ink);
+  stroke-width: 3.5;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: po-circle-draw 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.po-check-path {
+  stroke: var(--po-ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 35;
+  stroke-dashoffset: 35;
+  animation: po-path-draw 0.35s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes po-circle-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes po-path-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.po-check-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.po-check-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  line-height: 1.1;
+}
+
+.po-check-sub {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--po-ink-soft);
+  margin-top: 2px;
+}
+
+/* Main Body Row */
+.po-confirmed-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 28px;
+  margin: auto 0;
+}
+
+.po-confirmed-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Big Reference Hero */
+.po-ref-wrap {
+  margin-bottom: 12px;
+}
+
+.po-ref-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--po-ink-soft);
+  margin-bottom: 2px;
+}
+
+.po-ref {
+  font: 800 clamp(36px, 4.5vw, 48px)/1 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: 0.08em;
+  color: var(--po-ink);
+  text-shadow: 0 1px 1px rgba(255, 230, 200, 0.4);
+}
+
+/* ── Infinite Moving Route Line (City ➔ Destination) ────────── */
+.po-route-flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  max-width: 440px;
+}
+
+.po-route-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.po-node-ring {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--po-ink);
+  background: var(--po-peach);
+  flex-shrink: 0;
+}
+
+.po-node-ring.active {
+  background: var(--po-ink);
+  box-shadow: 0 0 8px rgba(20, 5, 0, 0.4);
+}
+
+.po-node-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  white-space: nowrap;
+}
+
+.po-flow-track {
+  flex: 1;
+  position: relative;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  min-width: 80px;
+}
+
+.po-flow-svg {
+  width: 100%;
+  height: 12px;
+}
+
+.po-flow-track-base {
+  stroke: rgba(20, 5, 0, 0.2);
+  stroke-width: 2;
+}
+
+/* Infinite animated dashed conveyor lines */
+.po-flow-track-moving {
+  stroke: var(--po-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 6;
+  animation: po-infinite-lines 0.9s linear infinite;
+}
+
+@keyframes po-infinite-lines {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -24; }
+}
+
+.po-flow-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #140500;
+  color: var(--po-peach);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(20, 5, 0, 0.4);
+  animation: po-truck-nudge 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes po-truck-nudge {
+  0% { transform: translate(-50%, -50%) scale(0.95); }
+  100% { transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* Graphic Meta Chips */
+.po-meta-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.po-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(20, 5, 0, 0.14);
+  border: 1.5px solid rgba(20, 5, 0, 0.25);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--po-ink);
+  backdrop-filter: blur(4px);
+}
+
+.po-chip-wa {
+  background: rgba(20, 5, 0, 0.2);
+  border-color: rgba(20, 5, 0, 0.4);
+}
+
+/* ── Right Boarding Stub with Audio Equalizer & Laser Scanner ── */
+.po-confirmed-stub {
+  flex: 0 0 220px;
+  background: rgba(20, 5, 0, 0.08);
+  border: 1.5px dashed rgba(20, 5, 0, 0.35);
+  border-radius: 12px;
+  padding: 18px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Infinite Dancing Soundwave Equalizer Lines */
+.po-sound-lines {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 20px;
+}
+
+.po-eq-line {
+  width: 3px;
+  background: var(--po-ink);
+  border-radius: 3px;
+  animation: po-eq-bounce 0.8s ease-in-out infinite alternate;
+}
+
+.po-eq-line.l1 { height: 6px; animation-delay: 0.1s; }
+.po-eq-line.l2 { height: 14px; animation-delay: 0.3s; }
+.po-eq-line.l3 { height: 9px; animation-delay: 0.15s; }
+.po-eq-line.l4 { height: 18px; animation-delay: 0.45s; }
+.po-eq-line.l5 { height: 12px; animation-delay: 0.2s; }
+.po-eq-line.l6 { height: 16px; animation-delay: 0.35s; }
+.po-eq-line.l7 { height: 7px; animation-delay: 0.05s; }
+
+@keyframes po-eq-bounce {
+  0% { transform: scaleY(0.4); opacity: 0.6; }
+  100% { transform: scaleY(1.2); opacity: 1; }
+}
+
+/* Scanner with Infinite Sweeping Laser Beam */
+.po-scanner-wrap {
+  position: relative;
+  overflow: hidden;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.po-confirmed-barcode {
+  width: 160px;
+  height: 38px;
+  opacity: 0.9;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--po-ink) 0 2px,
+    transparent 2px 4px,
+    var(--po-ink) 4px 6px,
+    transparent 6px 10px,
+    var(--po-ink) 10px 13px,
+    transparent 13px 16px
+  );
+}
+
+/* Infinite Laser Scan Beam */
+.po-laser-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #FFD3A6;
+  box-shadow: 0 0 10px 2px #E86A1E, 0 0 4px 1px #fff;
+  animation: po-laser-sweep 2s ease-in-out infinite alternate;
+}
+
+@keyframes po-laser-sweep {
+  0% { left: 0%; opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { left: 98%; opacity: 0.4; }
+}
+
+.po-confirmed-serial {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--po-ink-soft);
+  text-transform: uppercase;
+}
+
+.po-confirmed-footer {
+  margin-top: 8px;
+}
+
+.po-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--po-ink);
+  font: 800 11.5px 'DM Sans', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.po-link:hover {
+  opacity: 0.75;
+}
+
+/* ── Lightweight Sparks ──────────────────────────────────────── */
+.po-spark {
+  position: fixed;
+  z-index: 9999;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c, #FFD3A6);
+  pointer-events: none;
+  animation: po-spark-fade 0.8s ease-out forwards;
+}
+
+@keyframes po-spark-fade {
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes po-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Responsive Mobile Adaptations (< 768px) ─────────────────── */
+@media (max-width: 768px) {
+  .po-ticket {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .po-perf-seam {
+    width: 100%;
+    height: 0;
+    flex-direction: row;
+  }
+
+  .po-perf-line {
+    width: 100%;
+    height: 0;
+    border-left: 0;
+    border-top: 2px dashed rgba(20, 5, 0, 0.42);
+  }
+
+  .po-notch {
+    top: 50%;
+    left: auto;
+    transform: translateY(-50%);
+  }
+
+  .po-notch.notch-top {
+    left: -12px;
+  }
+
+  .po-notch.notch-bottom {
+    right: -12px;
+    bottom: auto;
+  }
+
+  .po-stub {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 14px 18px;
+  }
+
+  .po-stub-admit {
+    border-bottom: 0;
+    width: auto;
+    padding-bottom: 0;
+  }
+
+  .po-stub-mid {
+    display: none;
+  }
+
+  .po-tear-badge {
+    width: auto;
+    max-width: none;
+    padding: 8px 14px;
+  }
+
+  .po-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .po-grid .po-field:nth-child(4),
+  .po-grid .po-field:nth-child(5) {
+    grid-column: auto;
+  }
+
+  .po-apple-menu {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    transform-origin: bottom center;
+  }
+
+  .po-main {
+    padding: 18px 16px;
+  }
+
+  .po-confirmed-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .po-confirmed-stub {
+    flex: none;
+    width: 100%;
+  }
+
+  .po-watermark-bg {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .po-wrap *,
+  .po-wrap *::before,
+  .po-wrap *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

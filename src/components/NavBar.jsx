@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import './NavBar.css';
 
 const NAV_LINKS = [
-  { href: '#hero',    label: 'Arrival' },
-  { href: '#canvas',  label: 'Canvas' },
-  { href: '#reserve', label: 'Journey Pass' },
+  { href: '#hero',             label: 'Arrival' },
+  { href: '#places-of-launch', label: 'Places of Launch' },
+  { href: '#reserve',          label: 'Journey Pass' },
 ];
 
 export default function NavBar() {
