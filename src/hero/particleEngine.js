@@ -26,11 +26,11 @@ const MOUSE_FORCE  = 230;   // repulsion strength
 
 /* ── Intro timeline (generous, cinematic multilingual pacing) ── */
 const PHASE_DRIFT_START   =  0.0; // petals drift in gently from outer edges
-const PHASE_EN_START      =  0.6; // English "Hare Kṛṣṇa" converges & settles in screen center
+const PHASE_EN_START      =  0.6; // English "Hi there" converges & settles in screen center
 const PHASE_EN_END        =  2.6; // hold English (2.0s) for clear reading
-const PHASE_HI_START      =  2.6; // fluid calligraphy morph into Hindi "हरे कृष्ण"
+const PHASE_HI_START      =  2.6; // fluid calligraphy morph into Hindi "नमस्ते"
 const PHASE_HI_END        =  4.6; // hold Hindi (2.0s)
-const PHASE_OR_START      =  4.6; // fluid calligraphy morph into Odia "ହରେ କୃଷ୍ଣ"
+const PHASE_OR_START      =  4.6; // fluid calligraphy morph into Odia "ନମସ୍କାର"
 const PHASE_OR_END        =  6.6; // hold Odia (2.0s)
 const PHASE_BURST_PEAK    =  6.6; // gentle Holi color bloom dispersion (0.5s)
 const PHASE_TAGLINE_START =  7.1; // re-form into "One Door Many Worlds" in center
@@ -88,8 +88,8 @@ function textTargets(text, font, color, canvasW, canvasH, dpr, opts = {}) {
   const data = ctx.getImageData(0, 0, width, height).data;
   const pts = [];
 
-  // Sample core glyph body with ~2.65px spacing so individual dots are distinct and visible!
-  const step = Math.max(2, Math.round(2.65 * dpr));
+  // Sample core glyph body with ~2.2px spacing for rich, connected letterforms
+  const step = Math.max(2, Math.round(2.2 * dpr));
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {
       const i = (y * width + x) * 4;
@@ -474,20 +474,19 @@ export function createParticleEngine(canvas, opts = {}) {
           p.role = phase;
 
           // Living pointillism palette:
-          // 82% Deep ink (#2A0E14) + 13% Festive vermilion (#E5383B) + 5% Sparkling marigold (#FF9F1C)
-          // Contrasting dots ensure every individual dot is distinctly visible and gorgeous!
+          // 82% Deep ink (#2A0E14) + 12% Festive vermilion (#E5383B) + 6% Sparkling marigold (#FF9F1C)
           const cr = rng();
           if (cr < 0.82) {
             p.color = COLORS.ink;
-          } else if (cr < 0.95) {
+          } else if (cr < 0.94) {
             p.color = COLORS.red;
           } else {
             p.color = COLORS.marigold;
           }
 
-          // Distinct, clearly visible circular dots
-          p.r = portrait ? (1.35 + rng() * 0.25) : (1.50 + rng() * 0.30);
-          p.a = 0.96;
+          // Little big dots with smooth round presence just like before!
+          p.r = portrait ? (1.85 + rng() * 0.45) : (2.25 + rng() * 0.50);
+          p.a = 0.98;
         } else {
           // Extra particles softly drift to outer canvas borders, keeping central text clear
           const side = k % 4;
@@ -497,7 +496,7 @@ export function createParticleEngine(canvas, opts = {}) {
           else                 { p.tx = rng() * (W * 0.08); p.ty = rng() * H; }
           p.delay = rng() * 0.3;
           p.color = pickColor();
-          p.r = 1.0 + rng() * 0.6;
+          p.r = 1.1 + rng() * 0.7;
           p.a = 0.06 + rng() * 0.06;
           p.isOutline = false;
           p.role = 'ambient';
@@ -539,8 +538,8 @@ export function createParticleEngine(canvas, opts = {}) {
 
   // ── Get / build greeting targets (in dead center of screen)
   function getGreetPts(which = 'en') {
-    const isHindi = which === 'hi' || which === 'हरे कृष्ण';
-    const isOdia  = which === 'or' || which === 'ହରେ କୃଷ୍ଣ';
+    const isHindi = which === 'hi' || which === 'नमस्ते';
+    const isOdia  = which === 'or' || which === 'ନମସ୍କାର';
 
     let greetText;
     let fsize;
@@ -549,36 +548,36 @@ export function createParticleEngine(canvas, opts = {}) {
 
     if (portrait) {
       if (isHindi) {
-        greetText = ['हरे', 'कृष्ण'];
-        fsize = Math.min(W * 0.12, 54);
+        greetText = 'नमस्ते';
+        fsize = Math.min(W * 0.13, 56);
         letterSpacing = '3px';
         lineHeight = Math.round(fsize * 1.30);
       } else if (isOdia) {
-        greetText = ['ହରେ', 'କୃଷ୍ଣ'];
-        fsize = Math.min(W * 0.11, 50);
+        greetText = 'ନମସ୍କାର';
+        fsize = Math.min(W * 0.12, 52);
         letterSpacing = '2px';
         lineHeight = Math.round(fsize * 1.30);
       } else {
-        // English / IAST: 2 lines on portrait for majestic, prominent, open counters
-        greetText = ['Hare', 'Kṛṣṇa'];
-        fsize = Math.min(W * 0.13, 58);
-        letterSpacing = '5px'; // Generous tracking keeps letters distinctly separated!
+        // English: "Hi there"
+        greetText = ['Hi', 'there'];
+        fsize = Math.min(W * 0.14, 60);
+        letterSpacing = '5px';
         lineHeight = Math.round(fsize * 1.25);
       }
     } else {
       if (isHindi) {
-        greetText = 'हरे कृष्ण';
-        fsize = Math.min(W * 0.078, 98);
+        greetText = 'नमस्ते';
+        fsize = Math.min(W * 0.088, 108);
         letterSpacing = '3px';
         lineHeight = Math.round(fsize * 1.30);
       } else if (isOdia) {
-        greetText = 'ହରେ କୃଷ୍ଣ';
-        fsize = Math.min(W * 0.075, 94);
+        greetText = 'ନମସ୍କାର';
+        fsize = Math.min(W * 0.085, 104);
         letterSpacing = '2px';
         lineHeight = Math.round(fsize * 1.30);
       } else {
-        greetText = 'Hare Kṛṣṇa';
-        fsize = Math.min(W * 0.082, 105);
+        greetText = 'Hi there';
+        fsize = Math.min(W * 0.088, 108);
         letterSpacing = '5px';
         lineHeight = Math.round(fsize * 1.25);
       }
@@ -591,7 +590,6 @@ export function createParticleEngine(canvas, opts = {}) {
       font = `600 ${fsize}px "Noto Sans Oriya", "Kalinga", serif`;
     } else {
       // 600 Semi-Bold Cormorant Garamond Roman (Upright, not italic!)
-      // Upright forms prevent slanting overlap, keeping internal counters open and letters crisp!
       font = `600 ${fsize}px "Cormorant Garamond", Georgia, serif`;
     }
 

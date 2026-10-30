@@ -22,7 +22,7 @@ import './hero-light.css';
 // Single source of truth. Edit here for all languages.
 const COPY = {
   en: {
-    greeting:   'Hare Kṛṣṇa',
+    greeting:   'Hi there',
     h1_line1:   'Something is',
     h1_line2:   'on its way.',
     h1_aria:    'Something is on its way.',
@@ -34,7 +34,7 @@ const COPY = {
     skip:       'Skip intro',
   },
   hi: {
-    greeting:   'हरे कृष्ण',
+    greeting:   'नमस्ते',
     h1_line1:   'कुछ',
     h1_line2:   'आ रहा है।',
     h1_aria:    'कुछ आ रहा है।',
@@ -46,7 +46,7 @@ const COPY = {
     skip:       'इंट्रो छोड़ें',
   },
   or: {
-    greeting:   'ହରେ କୃଷ୍ଣ',
+    greeting:   'ନମସ୍କାର',
     h1_line1:   'କିଛି',
     h1_line2:   'ଆସୁଛି।',
     h1_aria:    'କିଛି ଆସୁଛି।',
