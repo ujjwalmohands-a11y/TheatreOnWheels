@@ -186,16 +186,19 @@ export default function App() {
         />
       ) : (
         <>
-          {/* 1. Hero */}
+          {/* 1. Hero / Shows */}
           <div id="hero">
+            <span id="shows" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
             <HeroLight lang={lang} onLangChange={setLang} />
           </div>
 
           <main>
             {/* 2. Places of Launch Section — Route Map & Demand Ballot */}
-            <Reveal>
-              <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
-            </Reveal>
+            <div id="route">
+              <Reveal>
+                <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
+              </Reveal>
+            </div>
 
             {/* 3. Reserve — form ON the ticket */}
             <section id="reserve" className="section ticket-section">
@@ -232,7 +235,7 @@ export default function App() {
       <RecognitionBadges />
 
       {/* Footer */}
-      <footer className="footer">
+      <footer id="contact" className="footer">
         <div className="container">
           <div className="footer-grid">
             <div>
