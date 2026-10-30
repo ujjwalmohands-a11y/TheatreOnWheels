@@ -2,11 +2,15 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './pass.css';
-import Hero from './hero/Hero';
+import HeroLight from './hero/HeroLight';
 import PrebookModal from './components/PrebookModal';
 import NavBar from './components/NavBar';
 import PlacesOfLaunch from './components/PlacesOfLaunch';
 import PrebookPass from './components/PrebookPass';
+import AboutPage from './components/AboutPage';
+import RecognitionBadges from './components/RecognitionBadges';
+import CustomCursor from './components/CustomCursor';
+
 
 /* ── Intersection-observer reveal ─────────────────────────────── */
 function useReveal(threshold = 0.12) {
@@ -70,20 +74,6 @@ const WORLDS = [
   },
 ];
 
-/* ── Loading screen ──────────────────────────────────────────── */
-function LoadingScreen({ onDone }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 1600);
-    return () => clearTimeout(t);
-  }, [onDone]);
-  return (
-    <div className="loading-screen" id="loading-screen">
-      <div className="loading-wordmark">Gaudiya Darshan</div>
-      <div className="loading-bar" />
-    </div>
-  );
-}
-
 /* ── Sidebar navigation dots ─────────────────────────────────── */
 const SECTIONS = [
   { id: 'hero', label: 'Arrival' },
@@ -123,30 +113,53 @@ function SideNav() {
 
 /* ── App ──────────────────────────────────────────────────────── */
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [loadDone, setLoadDone] = useState(false);
   const [prebook, setPrebook] = useState(null);
   const [selectedWorld, setSelectedWorld] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
+  const [currentPage, setCurrentPage] = useState('home');
+  const [lang, setLang] = useState('en');
 
-  const handleLoadDone = useCallback(() => {
-    const el = document.getElementById('loading-screen');
-    if (el) el.classList.add('is-done');
-    setTimeout(() => setLoadDone(true), 650);
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#about') {
+        window.location.href = '/about.html';
+        return;
+      }
+      setCurrentPage('home');
+      const targetId = hash.replace('#', '');
+      if (targetId && targetId !== 'hero') {
+        setTimeout(() => {
+          document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleNavigate = useCallback((page, sectionId) => {
+    if (page === 'about') {
+      window.location.href = '/about.html';
+      return;
+    } else {
+      setCurrentPage('home');
+      if (sectionId) {
+        window.location.hash = sectionId;
+        setTimeout(() => {
+          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        }, 60);
+      } else {
+        window.location.hash = 'hero';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
   }, []);
 
   const handleSelectCityForPass = useCallback((cityName) => {
     setSelectedCity(cityName);
   }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setPrebook({
-      name: liveForm.name.trim() || 'Guest',
-      city: liveForm.city.trim(),
-      world: WORLDS.find(w => w.id === selectedWorld)?.title || selectedWorld,
-    });
-  };
 
   const handleConfirmed = (details) => {
     try {
@@ -158,54 +171,65 @@ export default function App() {
 
   return (
     <>
-      {/* Loading */}
-      <LoadingScreen onDone={handleLoadDone} />
+      {/* Custom cursor trail (canvas) — .cur files applied via CSS */}
+      <CustomCursor />
 
-      {/* Sidebar nav dots */}
-      <SideNav />
+      {/* Sidebar nav dots (home only) */}
+      {currentPage === 'home' && <SideNav />}
 
-      <NavBar />
+      <NavBar currentPage={currentPage} onNavigate={handleNavigate} lang={lang} onLangChange={setLang} />
 
-      {/* 1. Hero */}
-      <div id="hero">
-        <Hero />
-      </div>
-
-      <main>
-        {/* 2. Places of Launch Section — Route Map & Demand Ballot */}
-        <Reveal>
-          <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
-        </Reveal>
-
-        {/* 2. Reserve — form ON the ticket */}
-        <section id="reserve" className="section ticket-section">
-          <div className="container">
-            <Reveal>
-              <span className="eyebrow">Early Access</span>
-              <h2 style={{ marginBottom: '12px' }}>Reserve your journey pass.</h2>
-              <p style={{ maxWidth: '44ch', marginBottom: '48px' }}>
-                No payment now. Fill in the fields below — your name appears on the ticket live as you type.
-                Tear the stub to confirm.
-              </p>
-            </Reveal>
-
-            <Reveal delay={1}>
-              <PrebookPass
-                initialCity={selectedCity}
-                selectedWorld={WORLDS.find((w) => w.id === selectedWorld)?.title || ''}
-                worlds={WORLDS}
-                onWorldChange={(worldTitle) => {
-                  const match = WORLDS.find((w) => w.title === worldTitle);
-                  if (match) setSelectedWorld(match.id);
-                  else setSelectedWorld('');
-                }}
-                onPrebooked={handleConfirmed}
-              />
-            </Reveal>
+      {currentPage === 'about' ? (
+        <AboutPage
+          onNavigateHome={() => handleNavigate('home', 'hero')}
+          onNavigateToReserve={() => handleNavigate('home', 'reserve')}
+        />
+      ) : (
+        <>
+          {/* 1. Hero */}
+          <div id="hero">
+            <HeroLight lang={lang} onLangChange={setLang} />
           </div>
-        </section>
 
-      </main>
+          <main>
+            {/* 2. Places of Launch Section — Route Map & Demand Ballot */}
+            <Reveal>
+              <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
+            </Reveal>
+
+            {/* 3. Reserve — form ON the ticket */}
+            <section id="reserve" className="section ticket-section">
+              <div className="container">
+                <Reveal>
+                  <span className="eyebrow">Early Access</span>
+                  <h2 style={{ marginBottom: '12px' }}>Reserve your journey pass.</h2>
+                  <p style={{ maxWidth: '44ch', marginBottom: '48px' }}>
+                    No payment now. Fill in the fields below — your name appears on the ticket live as you type.
+                    Tear the stub to confirm.
+                  </p>
+                </Reveal>
+
+                <Reveal delay={1}>
+                  <PrebookPass
+                    initialCity={selectedCity}
+                    selectedWorld={WORLDS.find((w) => w.id === selectedWorld)?.title || ''}
+                    worlds={WORLDS}
+                    onWorldChange={(worldTitle) => {
+                      const match = WORLDS.find((w) => w.title === worldTitle);
+                      if (match) setSelectedWorld(match.id);
+                      else setSelectedWorld('');
+                    }}
+                    onPrebooked={handleConfirmed}
+                  />
+                </Reveal>
+              </div>
+            </section>
+          </main>
+        </>
+      )}
+
+      {/* Recognition Badges */}
+      <RecognitionBadges />
 
       {/* Footer */}
       <footer className="footer">
@@ -220,9 +244,50 @@ export default function App() {
             <div>
               <div className="footer-col-title">Navigation</div>
               <ul className="footer-links">
-                <li><a href="#hero">Arrival</a></li>
-                <li><a href="#places-of-launch">Places of Launch</a></li>
-                <li><a href="#reserve">Reserve Pass</a></li>
+                <li>
+                  <a
+                    href="#hero"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('home', 'hero');
+                    }}
+                  >
+                    Arrival
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#places-of-launch"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('home', 'places-of-launch');
+                    }}
+                  >
+                    Places of Launch
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#reserve"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('home', 'reserve');
+                    }}
+                  >
+                    Reserve Pass
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/about.html"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('about');
+                    }}
+                  >
+                    About The Theatre
+                  </a>
+                </li>
               </ul>
             </div>
             <div>

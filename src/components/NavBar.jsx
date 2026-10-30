@@ -5,16 +5,60 @@ const NAV_LINKS = [
   { href: '#hero',             label: 'Arrival' },
   { href: '#places-of-launch', label: 'Places of Launch' },
   { href: '#reserve',          label: 'Journey Pass' },
+  { href: '/about.html',       label: 'About' },
 ];
 
-export default function NavBar() {
+const LANG_OPTIONS = [
+  { code: 'en', label: 'EN' },
+  { code: 'hi', label: 'हिं' },
+  { code: 'or', label: 'ଓଡ଼ି' },
+];
+
+export default function NavBar({ currentPage = 'home', onNavigate, lang: propLang, onLangChange }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [lang, setLang] = useState('EN');
-  const [soundOn, setSoundOn] = useState(false);
+  const [internalLang, setInternalLang] = useState('en');
+  const [isOverHero, setIsOverHero] = useState(true);
+  const activeLang = propLang || internalLang;
+
+  const handleLangSelect = (code) => {
+    setInternalLang(code);
+    if (onLangChange) onLangChange(code);
+  };
+
   const linksRef = useRef(null);
   const lampRef = useRef(null);
-  const [activeHash, setActiveHash] = useState('#hero');
+  const [activeHash, setActiveHash] = useState(currentPage === 'about' ? '#about' : '#hero');
+
+  useEffect(() => {
+    if (currentPage !== 'home') {
+      setIsOverHero(false);
+      return;
+    }
+    const updateHeroState = () => {
+      const heroEl = document.getElementById('hero');
+      if (!heroEl) {
+        setIsOverHero(window.scrollY < 650);
+        return;
+      }
+      const rect = heroEl.getBoundingClientRect();
+      setIsOverHero(rect.bottom > 80);
+    };
+
+    updateHeroState();
+    window.addEventListener('scroll', updateHeroState, { passive: true });
+    window.addEventListener('resize', updateHeroState);
+    return () => {
+      window.removeEventListener('scroll', updateHeroState);
+      window.removeEventListener('resize', updateHeroState);
+    };
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentPage === 'about') {
+      setActiveHash('#about');
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -53,10 +97,31 @@ export default function NavBar() {
     if (activeEl) moveLampTo(activeEl);
   };
 
+  const handleLinkClick = (e, href) => {
+    e.preventDefault();
+    setActiveHash(href);
+    if (href === '#about' || href === '/about.html') {
+      window.location.href = '/about.html';
+      return;
+    } else {
+      const targetId = href.replace('#', '');
+      if (onNavigate) onNavigate('home', targetId);
+      else {
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
-    <div className="nav-wrapper">
-      <header className={`nav ${scrolled ? 'small' : ''}`}>
-        <a className="brand" href="#" aria-label="TheatreOnWheels — home">
+    <div className={`nav-wrapper ${isOverHero ? 'is-hero-light' : ''}`}>
+      <header className={`nav ${scrolled ? 'small' : ''} ${isOverHero ? 'is-hero-light' : ''}`}>
+        <a
+          className="brand"
+          href="#hero"
+          aria-label="TheatreOnWheels — home"
+          onClick={(e) => handleLinkClick(e, '#hero')}
+        >
           <span className="mark"><span className="flame"></span></span>
           <span className="brand-text">
             <span className="brand-name">TheatreOnWheels</span>
@@ -71,7 +136,7 @@ export default function NavBar() {
                 aria-current={activeHash === link.href ? 'page' : undefined}
                 onMouseEnter={handleLinkHover}
                 onFocus={handleLinkHover}
-                onClick={() => setActiveHash(link.href)}
+                onClick={(e) => handleLinkClick(e, link.href)}
               >
                 {link.label}
               </a>
@@ -82,13 +147,24 @@ export default function NavBar() {
 
         <div className="tools">
           <div className="lang" role="group" aria-label="Language">
-            {['EN', 'हिं', 'ଓଡ଼ི'].map(l => (
-              <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)}>
-                {l}
+            {LANG_OPTIONS.map(opt => (
+              <button
+                key={opt.code}
+                type="button"
+                aria-pressed={activeLang === opt.code}
+                onClick={() => handleLangSelect(opt.code)}
+              >
+                {opt.label}
               </button>
             ))}
           </div>
-          <a className="ticket" href="#reserve">Reserve a Seat</a>
+          <a
+            className="ticket"
+            href="#reserve"
+            onClick={(e) => handleLinkClick(e, '#reserve')}
+          >
+            Reserve a Seat
+          </a>
           <button
             type="button"
             className="burger"
@@ -111,8 +187,8 @@ export default function NavBar() {
             key={link.href}
             className="big"
             href={link.href}
-            onClick={() => {
-              setActiveHash(link.href);
+            onClick={(e) => {
+              handleLinkClick(e, link.href);
               setMenuOpen(false);
               document.body.style.overflow = '';
             }}
@@ -122,16 +198,32 @@ export default function NavBar() {
         ))}
         <div className="row">
           <div className="lang" role="group" aria-label="Language">
-            {['EN', 'हिं', 'ଓଡ଼ି'].map(l => (
-              <button key={l} type="button" aria-pressed={lang === l} onClick={() => setLang(l)}>
-                {l}
+            {LANG_OPTIONS.map(opt => (
+              <button
+                key={opt.code}
+                type="button"
+                aria-pressed={activeLang === opt.code}
+                onClick={() => {
+                  handleLangSelect(opt.code);
+                  setMenuOpen(false);
+                  document.body.style.overflow = '';
+                }}
+              >
+                {opt.label}
               </button>
             ))}
           </div>
-          <a className="ticket" href="#reserve" onClick={() => {
-            setMenuOpen(false);
-            document.body.style.overflow = '';
-          }}>Reserve a Seat</a>
+          <a
+            className="ticket"
+            href="#reserve"
+            onClick={(e) => {
+              handleLinkClick(e, '#reserve');
+              setMenuOpen(false);
+              document.body.style.overflow = '';
+            }}
+          >
+            Reserve a Seat
+          </a>
         </div>
       </div>
     </div>

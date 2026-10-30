@@ -9,6 +9,8 @@
   --dot: rgba(255, 255, 255, 0.17);
   --acc: #ff6a2b;
   --acc-rgb: 255, 106, 43;
+  --launched: #2dd4bf;
+  --launched-rgb: 45, 212, 191;
   --ga: 0.65;
   --line: rgba(255, 255, 255, 0.1);
   --card: rgba(18, 21, 28, 0.8);
@@ -32,6 +34,8 @@
   --dot: rgba(20, 24, 32, 0.16);
   --acc: #e4460f;
   --acc-rgb: 228, 70, 15;
+  --launched: #0d9488;
+  --launched-rgb: 13, 148, 136;
   --ga: 0.2;
   --line: rgba(20, 24, 32, 0.12);
   --card: rgba(255, 255, 255, 0.75);
@@ -64,6 +68,41 @@
   margin: 8px 0 0;
   color: var(--mut);
   font-size: 13px;
+}
+
+/* ── Color legend ───────────────────────────────────────────── */
+.launch-map-section .launch-legend {
+  display: flex;
+  gap: 20px;
+  margin: 14px 0 0;
+  flex-wrap: wrap;
+}
+
+.launch-map-section .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--mut);
+}
+
+.launch-map-section .legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.launch-map-section .legend-launched .legend-dot {
+  background: var(--launched);
+  box-shadow: 0 0 6px 1px rgba(var(--launched-rgb), 0.7);
+}
+
+.launch-map-section .legend-upcoming .legend-dot {
+  background: var(--acc);
+  box-shadow: 0 0 6px 1px rgba(var(--acc-rgb), 0.7);
 }
 
 .launch-map-section .tog {
@@ -185,6 +224,73 @@
     transform: scale(3.2);
     opacity: 0;
   }
+}
+
+/* ── Launched (Puri) pin – teal ───────────────────────────── */
+.launch-map-section .c.launched .d {
+  background: var(--launched);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px rgba(var(--launched-rgb), 0.6),
+    0 0 9px 3px rgba(var(--launched-rgb), 0.6);
+}
+
+.launch-map-section .c.launched.on .d {
+  transform: scale(1.6);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--launched),
+    0 0 18px 6px rgba(var(--launched-rgb), 0.75);
+}
+
+.launch-map-section .c.launched .ring {
+  border-color: rgba(var(--launched-rgb), 0.9);
+  box-shadow: 0 0 10px rgba(var(--launched-rgb), 0.6);
+}
+
+/* Star shaped pin for launched city */
+.launch-map-section .c .d.star-pin {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 1px;
+  transform: rotate(45deg) scale(0.8);
+  background: var(--launched);
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 3px rgba(var(--launched-rgb), 0.7),
+    0 0 12px 4px rgba(var(--launched-rgb), 0.55);
+}
+
+.launch-map-section .c.on .d.star-pin {
+  transform: rotate(45deg) scale(1.2);
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--launched),
+    0 0 20px 8px rgba(var(--launched-rgb), 0.8);
+}
+
+/* ── Debut starburst animation for Puri ───────────────────── */
+@keyframes debut-burst {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 0; }
+  15%  { transform: scale(3.5) rotate(90deg); opacity: 1; }
+  50%  { transform: scale(2.2) rotate(180deg); opacity: 0.7; }
+  85%  { transform: scale(4.5) rotate(270deg); opacity: 0.4; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes debut-ripple {
+  0%   { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(6);   opacity: 0; }
+}
+
+.launch-map-section .c.debut .ring {
+  display: block;
+  animation: debut-ripple 0.7s cubic-bezier(0.2, 0.6, 0.3, 1) forwards,
+             debut-ripple 0.7s cubic-bezier(0.2, 0.6, 0.3, 1) 0.75s forwards,
+             debut-ripple 0.7s cubic-bezier(0.2, 0.6, 0.3, 1) 1.5s forwards;
+  border-color: var(--launched);
+  box-shadow: 0 0 14px rgba(var(--launched-rgb), 0.9);
+}
+
+.launch-map-section .c.debut .d {
+  animation: debut-burst 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .launch-map-section .tag {
@@ -420,6 +526,58 @@
     0 4px 18px rgba(var(--acc-rgb), 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
+}
+
+/* ── Launched chip (teal) ────────────────────────────────── */
+.launch-map-section .chip.launched {
+  color: var(--launched);
+  border-color: rgba(var(--launched-rgb), 0.35);
+  background: rgba(var(--launched-rgb), 0.06);
+}
+
+.launch-map-section .chip.launched:hover {
+  color: #fff;
+  border-color: rgba(var(--launched-rgb), 0.6);
+  background: rgba(var(--launched-rgb), 0.12);
+  box-shadow: 0 2px 14px rgba(var(--launched-rgb), 0.25);
+}
+
+.launch-map-section .chip.launched.on {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--launched-rgb), 0.32) 0%,
+    rgba(var(--launched-rgb), 0.16) 100%
+  );
+  border-color: rgba(var(--launched-rgb), 0.75);
+  box-shadow:
+    0 0 0 1px rgba(var(--launched-rgb), 0.25),
+    0 4px 20px rgba(var(--launched-rgb), 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.launch-map-section .chip.launched::after {
+  display: none; /* remove default acc-color dot */
+}
+
+/* Live badge inside launched chip */
+.launch-map-section .launched-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--launched);
+  opacity: 0.9;
+  vertical-align: 1px;
+}
+
+.launch-map-section .chip.on .launched-badge {
+  color: #fff;
+  opacity: 1;
 }
 
 /* glowing dot indicator on active chip */

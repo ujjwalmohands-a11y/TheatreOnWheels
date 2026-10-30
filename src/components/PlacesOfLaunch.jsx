@@ -6,8 +6,14 @@ const LON0 = 67.5,
   LAT0 = 7.2,
   LAT1 = 37.2;
 
-// Regions
-const R = ['North & Central', 'West', 'East', 'South'];
+// Regions – East first so it appears at the top of the list
+const R = ['East', 'North & Central', 'West', 'South'];
+// Region index mapping (CITIES[i][3] still stores original 0-3 index)
+const REGION_ORDER = [2, 0, 1, 3]; // East=2, North&Central=0, West=1, South=3
+
+// Cities that have already been launched (index in CITIES array)
+const LAUNCHED_INDICES = new Set([18]); // Puri = index 18
+const PURI_INDEX = 18;
 
 // [name, lat, lon, region, nudge x, nudge y (px)]
 const CITIES = [
@@ -210,6 +216,7 @@ function inside(x, y) {
 }
 
 export default function PlacesOfLaunch({ onSelectCityForPass }) {
+  const puriDebutDoneRef = useRef(false);
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const baseCanvasRef = useRef(null);
@@ -231,6 +238,7 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
     dots: [],
     cpx: [],
     accRGB: '255, 106, 43',
+    launchedRGB: '45, 212, 191',
     dotCol: 'rgba(255, 255, 255, 0.17)',
     pinEls: [],
     chipEls: [],
@@ -420,8 +428,9 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
     // Create pins elements
     pinsContainer.innerHTML = '';
     s.pinEls = CITIES.map((c, i) => {
+      const isLaunched = LAUNCHED_INDICES.has(i);
       const d = document.createElement('div');
-      d.className = 'c';
+      d.className = 'c' + (isLaunched ? ' launched' : '');
       d.style.left =
         'calc(' +
         ((c[2] - LON0) / (LON1 - LON0)) * 100 +
@@ -435,8 +444,14 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
         (c[5] || 0) +
         'px)';
       d.style.setProperty('--dl', ((i * 0.41) % 3.6).toFixed(2) + 's');
-      d.innerHTML =
-        '<span class="ring"></span><span class="d"></span><span class="hit"></span>';
+      // Puri gets a star marker; others get the regular dot
+      if (isLaunched) {
+        d.innerHTML =
+          '<span class="ring"></span><span class="d star-pin"></span><span class="hit"></span>';
+      } else {
+        d.innerHTML =
+          '<span class="ring"></span><span class="d"></span><span class="hit"></span>';
+      }
 
       const hit = d.querySelector('.hit');
       if (hit) {
@@ -455,6 +470,20 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
       pinsContainer.appendChild(d);
       return d;
     });
+
+    // Auto-select Puri on first mount with debut animation
+    if (!puriDebutDoneRef.current) {
+      puriDebutDoneRef.current = true;
+      setTimeout(() => {
+        setCity(PURI_INDEX, false);
+        // Trigger debut class on Puri pin
+        const puriPin = s.pinEls[PURI_INDEX];
+        if (puriPin) {
+          puriPin.classList.add('debut');
+          setTimeout(() => puriPin.classList.remove('debut'), 2400);
+        }
+      }, 600);
+    }
 
     const reduce = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -484,7 +513,9 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
           (d[2] === s.act ? 0.9 : 0.5);
         if (a < 0.06) continue;
 
-        g.fillStyle = 'rgba(' + s.accRGB + ',' + a.toFixed(2) + ')';
+        // Launched cities (Puri) use teal; upcoming use orange
+        const rgb = LAUNCHED_INDICES.has(d[2]) ? s.launchedRGB : s.accRGB;
+        g.fillStyle = 'rgba(' + rgb + ',' + a.toFixed(2) + ')';
         g.beginPath();
         g.arc(d[0], d[1], r0 * (1 + a * 0.35), 0, 6.283);
         g.fill();
@@ -566,6 +597,18 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
           </div>
         </header>
 
+        {/* Color legend */}
+        <div className="launch-legend">
+          <span className="legend-item legend-launched">
+            <span className="legend-dot" />
+            Already Launched
+          </span>
+          <span className="legend-item legend-upcoming">
+            <span className="legend-dot" />
+            Upcoming Launch
+          </span>
+        </div>
+
         <div className="grid">
           {/* Map Stage & Mobile Controls */}
           <div className="stage-column">
@@ -636,50 +679,55 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
             </div>
           </div>
 
-          {/* Region Grouped City Chips */}
+          {/* Region Grouped City Chips – East first */}
           <div className="list" id="list">
-            {R.map((regionName, ri) => (
-              <div className="reg" key={regionName}>
-                <h3>{regionName}</h3>
-                <div className="chips">
-                  {CITIES.map((c, i) => {
-                    if (c[3] !== ri) return null;
-                    const isSelected = activeCity === i;
-                    return (
-                      <button
-                        key={c[0]}
-                        type="button"
-                        className={`chip ${isSelected ? 'on' : ''}`}
-                        title={ST[i]}
-                        ref={(el) => {
-                          animRef.current.chipEls[i] = el;
-                        }}
-                        onMouseEnter={() => {
-                          animRef.current.paused = true;
-                          setCity(i, true);
-                        }}
-                        onMouseLeave={() => {
-                          animRef.current.paused = false;
-                        }}
-                        onFocus={() => {
-                          animRef.current.paused = true;
-                          setCity(i, true);
-                        }}
-                        onBlur={() => {
-                          animRef.current.paused = false;
-                        }}
-                        onClick={() => {
-                          animRef.current.paused = true;
-                          setCity(i, true);
-                        }}
-                      >
-                        {c[0]}
-                      </button>
-                    );
-                  })}
+            {REGION_ORDER.map((regionIdx) => {
+              const regionName = ['North & Central', 'West', 'East', 'South'][regionIdx];
+              return (
+                <div className="reg" key={regionName}>
+                  <h3>{regionName}</h3>
+                  <div className="chips">
+                    {CITIES.map((c, i) => {
+                      if (c[3] !== regionIdx) return null;
+                      const isSelected = activeCity === i;
+                      const isLaunched = LAUNCHED_INDICES.has(i);
+                      return (
+                        <button
+                          key={c[0]}
+                          type="button"
+                          className={`chip ${isSelected ? 'on' : ''} ${isLaunched ? 'launched' : ''}`}
+                          title={ST[i]}
+                          ref={(el) => {
+                            animRef.current.chipEls[i] = el;
+                          }}
+                          onMouseEnter={() => {
+                            animRef.current.paused = true;
+                            setCity(i, true);
+                          }}
+                          onMouseLeave={() => {
+                            animRef.current.paused = false;
+                          }}
+                          onFocus={() => {
+                            animRef.current.paused = true;
+                            setCity(i, true);
+                          }}
+                          onBlur={() => {
+                            animRef.current.paused = false;
+                          }}
+                          onClick={() => {
+                            animRef.current.paused = true;
+                            setCity(i, true);
+                          }}
+                        >
+                          {c[0]}
+                          {isLaunched && <span className="launched-badge">✦ Live</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

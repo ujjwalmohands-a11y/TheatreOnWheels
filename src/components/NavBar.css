@@ -284,15 +284,17 @@
   inset: 0;
   z-index: 90;
   background: var(--ink);
-  padding: calc(var(--h) + 40px) 28px 32px;
+  padding: calc(var(--h) + 28px) clamp(20px, 5vw, 32px) max(28px, env(safe-area-inset-bottom, 28px));
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
   opacity: 0;
   visibility: hidden;
-  transition: 0.35s;
+  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.3s;
   font-family: var(--sans);
   color: var(--cream);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .nav-wrapper .panel.open {
   opacity: 1;
@@ -300,18 +302,65 @@
 }
 .nav-wrapper .panel a.big {
   font-family: var(--serif);
-  font-size: 44px;
+  font-size: clamp(26px, 7vw, 38px);
   font-weight: 500;
   text-decoration: none;
   color: inherit;
-  padding: 6px 0;
+  padding: 12px 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid rgba(247, 232, 200, 0.08);
+  transition: color 0.2s, padding-left 0.2s;
+}
+.nav-wrapper .panel a.big:hover {
+  color: var(--gold);
+  padding-left: 6px;
 }
 .nav-wrapper .panel .row {
   margin-top: auto;
+  padding-top: 24px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: space-between;
   align-items: center;
+}
+.nav-wrapper .panel .row .ticket {
+  min-height: 44px;
+  padding: 12px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Light theme mobile panel */
+.nav-wrapper.is-hero-light .panel {
+  background: #FFF4E6;
+  color: #2A0E14;
+}
+.nav-wrapper.is-hero-light .panel a.big {
+  color: #2A0E14;
+  border-bottom-color: rgba(42, 14, 20, 0.1);
+}
+.nav-wrapper.is-hero-light .panel a.big:hover {
+  color: #E5383B;
+}
+.nav-wrapper.is-hero-light .panel .lang {
+  background: rgba(42, 14, 20, 0.05);
+  border-color: rgba(42, 14, 20, 0.15);
+}
+.nav-wrapper.is-hero-light .panel .lang button {
+  color: rgba(42, 14, 20, 0.7);
+}
+.nav-wrapper.is-hero-light .panel .lang button[aria-pressed="true"] {
+  background: rgba(229, 56, 59, 0.14);
+  color: #E5383B;
+}
+.nav-wrapper.is-hero-light .panel .ticket {
+  background: #E5383B;
+  color: #FFF4E6;
+  border-color: #E5383B;
 }
 
 .nav-wrapper a:focus-visible,
@@ -319,6 +368,92 @@
   outline: 2px solid var(--gold);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* ================================================================
+   Light Theme Hero Overrides
+   Activated when navbar is over the warm cream hero section
+   ================================================================ */
+.nav-wrapper .nav.is-hero-light {
+  color: #2A0E14;
+}
+
+.nav-wrapper .nav.is-hero-light.small {
+  background: rgba(255, 244, 230, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(42, 14, 20, 0.08);
+}
+
+.nav-wrapper .nav.is-hero-light .mark {
+  border-color: rgba(229, 56, 59, 0.28);
+}
+
+.nav-wrapper .nav.is-hero-light .flame {
+  background: linear-gradient(#FF9F1C, #E5383B);
+  box-shadow: 0 0 12px 3px rgba(229, 56, 59, 0.45);
+}
+
+.nav-wrapper .nav.is-hero-light .brand-name {
+  color: #2A0E14;
+}
+
+.nav-wrapper .nav.is-hero-light .links a {
+  color: rgba(42, 14, 20, 0.65);
+}
+
+.nav-wrapper .nav.is-hero-light .links a:hover,
+.nav-wrapper .nav.is-hero-light .links a[aria-current="page"] {
+  color: #2A0E14;
+  font-weight: 500;
+}
+
+.nav-wrapper .nav.is-hero-light .lamp::before {
+  background: #E5383B;
+  box-shadow: 0 0 10px 1px rgba(229, 56, 59, 0.5);
+}
+
+.nav-wrapper .nav.is-hero-light .lang {
+  background: rgba(42, 14, 20, 0.04);
+  border: 1px solid rgba(42, 14, 20, 0.12);
+}
+
+.nav-wrapper .nav.is-hero-light .lang button {
+  color: rgba(42, 14, 20, 0.65);
+}
+
+.nav-wrapper .nav.is-hero-light .lang button:hover {
+  color: #2A0E14;
+}
+
+.nav-wrapper .nav.is-hero-light .lang button[aria-pressed="true"] {
+  background: rgba(229, 56, 59, 0.12);
+  color: #E5383B;
+  font-weight: 600;
+}
+
+.nav-wrapper .nav.is-hero-light .ticket {
+  color: #FFF4E6;
+  background: #E5383B;
+  border-color: #E5383B;
+  box-shadow: 0 4px 14px rgba(229, 56, 59, 0.25);
+}
+
+.nav-wrapper .nav.is-hero-light .ticket:hover {
+  background: #d42e31;
+  border-color: #d42e31;
+  color: #FFF4E6;
+  box-shadow: 0 6px 18px rgba(229, 56, 59, 0.35);
+  transform: translateY(-1px);
+}
+
+.nav-wrapper .nav.is-hero-light .burger span {
+  background: #2A0E14;
+}
+
+.nav-wrapper .nav.is-hero-light a:focus-visible,
+.nav-wrapper .nav.is-hero-light button:focus-visible {
+  outline: 2px solid #E5383B;
 }
 
 @media (max-width: 900px) {

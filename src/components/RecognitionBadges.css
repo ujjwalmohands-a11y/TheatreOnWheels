@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@500;600&display=swap');
+
+.recognition {
+  --ink: #e8edf8;
+  --mute: #7f8cab;
+  --bg: #05070f;
+  position: relative;
+  overflow: hidden;
+  padding: 72px 24px 80px;
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  background: radial-gradient(ellipse 70% 55% at 50% 0%, #121a35 0%, transparent 70%), var(--bg);
+}
+
+.recognition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #fff6 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 60%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 45% 80%, #fff4 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 22%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 8% 75%, #fff4 50%, transparent 51%);
+  animation: tw 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.recognition .head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 1000px;
+  margin: 0 auto 56px;
+}
+
+.recognition .head h2 {
+  font: 600 0.8rem 'Orbitron', sans-serif;
+  letter-spacing: 0.42em;
+  margin: 0;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.recognition .head i {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #ffffff40, transparent);
+}
+
+.recognition .badges {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 56px 72px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.recognition .badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 210px;
+  text-align: center;
+  animation: float 7s ease-in-out infinite;
+}
+
+.recognition .badge-item:nth-child(2) {
+  animation-delay: -2.3s;
+}
+
+.recognition .badge-item:nth-child(3) {
+  animation-delay: -4.6s;
+}
+
+.recognition .badge-item p {
+  margin: 18px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--mute);
+  letter-spacing: 0.04em;
+}
+
+.recognition .badge-item p b {
+  display: block;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.recognition .badge {
+  width: 190px;
+  height: auto;
+  overflow: visible;
+}
+
+.recognition .cap-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 10px var(--c);
+  margin-right: 8px;
+  vertical-align: middle;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.recognition .gold {
+  --c: #f1cf8e;
+}
+
+.recognition .saffron {
+  --c: #ff9d63;
+}
+
+.recognition .teal {
+  --c: #6cf0d6;
+}
+
+.recognition .badge .aura {
+  opacity: 0.1;
+  filter: blur(18px);
+  animation: aura 4s ease-in-out infinite;
+}
+
+.recognition .badge .tick line {
+  stroke: var(--c);
+  stroke-width: 0.8;
+  opacity: 0.35;
+}
+
+.recognition .badge .hair {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 0.8;
+  opacity: 0.4;
+}
+
+.recognition .badge .hair2 {
+  stroke: var(--c);
+  stroke-width: 1;
+  opacity: 0.7;
+  stroke-linecap: round;
+}
+
+.recognition .badge .sweep {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 90 513;
+  filter: drop-shadow(0 0 4px var(--c));
+}
+
+.recognition .badge .dot {
+  fill: #fff;
+  filter: drop-shadow(0 0 5px var(--c)) drop-shadow(0 0 10px var(--c));
+}
+
+.recognition .badge .rtxt {
+  font: 500 7px 'Orbitron', sans-serif;
+  fill: var(--c);
+  opacity: 0.85;
+  letter-spacing: 0.2em;
+}
+
+.recognition .badge .icon {
+  stroke: var(--c);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.recognition .badge .icon .fill {
+  fill: var(--c);
+  stroke: none;
+}
+
+.recognition .badge .icon .fillsoft {
+  fill: var(--c);
+  fill-opacity: 0.18;
+}
+
+.recognition .badge .l1 {
+  font: 600 15px 'Orbitron', sans-serif;
+  fill: #fff;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+}
+
+.recognition .badge .l2 {
+  font: 500 7.5px 'Orbitron', sans-serif;
+  fill: var(--c);
+  letter-spacing: 0.3em;
+}
+
+.recognition .spin {
+  animation: rot 24s linear infinite;
+}
+
+.recognition .spin.slow {
+  animation-duration: 14s;
+}
+
+.recognition .spin.rev {
+  animation: rot 9s linear infinite reverse;
+}
+
+.recognition .spin.orbit {
+  animation: rot 9s linear infinite reverse;
+}
+
+.recognition .spin.ring {
+  animation-duration: 60s;
+}
+
+.recognition .breathe {
+  animation: breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes rot {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes tw {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes aura {
+  0%, 100% {
+    opacity: 0.06;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 768px) {
+  .recognition {
+    padding: 48px 16px 56px;
+  }
+  .recognition .head {
+    margin-bottom: 36px;
+    gap: 12px;
+  }
+  .recognition .head h2 {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+  }
+  .recognition .badges {
+    gap: 36px 20px;
+  }
+  .recognition .badge-item {
+    width: min(100%, 250px);
+  }
+  .recognition .badge .aura {
+    filter: blur(8px); /* Low-end GPU optimization: avoid heavy 18px blur */
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recognition * {
+    animation: none !important;
+  }
+}
