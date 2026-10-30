@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './pass.css';
-import HeroLight from './hero/HeroLight';
+import Hero from './hero/Hero';
 import PrebookModal from './components/PrebookModal';
 import NavBar from './components/NavBar';
 import PlacesOfLaunch from './components/PlacesOfLaunch';
@@ -189,7 +189,7 @@ export default function App() {
           {/* 1. Hero / Shows */}
           <div id="hero">
             <span id="shows" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
-            <HeroLight lang={lang} onLangChange={setLang} />
+            <Hero lang={lang} onLangChange={setLang} />
           </div>
 
           <main>

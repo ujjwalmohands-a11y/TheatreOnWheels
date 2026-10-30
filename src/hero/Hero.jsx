@@ -23,11 +23,13 @@ function loadLangFont(lang) {
   document.head.appendChild(l);
 }
 
-export default function Hero() {
+export default function Hero({ lang: propLang, onLangChange }) {
   const [tier] = useState(detectTier);
   const live = tier === 'full';
   const [portrait, setPortrait] = useState(isPortrait);
-  const [lang, setLang] = useState('en');
+  const [internalLang, setInternalLang] = useState('en');
+  const lang = propLang || internalLang;
+  const setLang = onLangChange || setInternalLang;
   const [soundOn, setSoundOn] = useState(false);
   const [mask, setMask] = useState(0);
   const [nudge, setNudge] = useState(false);
