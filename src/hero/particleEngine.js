@@ -24,16 +24,20 @@ const NOISE_SPEED  = 0.85;
 const MOUSE_RADIUS = 95;    // px repulsion radius
 const MOUSE_FORCE  = 230;   // repulsion strength
 
-/* ── Intro timeline (generous, cinematic pacing) ─────────────── */
+/* ── Intro timeline (generous, cinematic multilingual pacing) ── */
 const PHASE_DRIFT_START   =  0.0; // petals drift in gently from outer edges
-const PHASE_GREET_START   =  1.0; // converge into large greeting in screen center
-const PHASE_GREET_END     =  4.4; // hold and gracefully morph greetings (3.4s)
-const PHASE_BURST_PEAK    =  4.8; // smooth Holi color powder burst outward
-const PHASE_TAGLINE_START =  5.3; // re-form into "One door. Many worlds." in center
-const PHASE_TAGLINE_END   =  7.8; // hold tagline (2.5s) for dignified reading
-const PHASE_TRUCK_START   =  7.8; // stream across screen into 7D theatre truck
-const PHASE_TRUCK_END     = 10.2; // truck fully formed, sunrise ascendant
-const PHASE_HERO_FADE     = 10.2; // hero copy on left fades in
+const PHASE_EN_START      =  0.6; // English "Hare Kṛṣṇa" converges & settles in screen center
+const PHASE_EN_END        =  2.6; // hold English (2.0s) for clear reading
+const PHASE_HI_START      =  2.6; // fluid calligraphy morph into Hindi "हरे कृष्ण"
+const PHASE_HI_END        =  4.6; // hold Hindi (2.0s)
+const PHASE_OR_START      =  4.6; // fluid calligraphy morph into Odia "ହରେ କୃଷ୍ଣ"
+const PHASE_OR_END        =  6.6; // hold Odia (2.0s)
+const PHASE_BURST_PEAK    =  6.6; // gentle Holi color bloom dispersion (0.5s)
+const PHASE_TAGLINE_START =  7.1; // re-form into "One Door Many Worlds" in center
+const PHASE_TAGLINE_END   =  9.5; // hold tagline (2.4s) for dignified reading
+const PHASE_TRUCK_START   =  9.5; // stream across screen into 7D theatre truck
+const PHASE_TRUCK_END     = 12.0; // truck fully formed, sunrise ascendant
+const PHASE_HERO_FADE     = 12.0; // hero copy on left fades in
 
 /* ── Tiny deterministic rng ──────────────────────────────────── */
 const srand = (seed) => {
@@ -84,8 +88,8 @@ function textTargets(text, font, color, canvasW, canvasH, dpr, opts = {}) {
   const data = ctx.getImageData(0, 0, width, height).data;
   const pts = [];
 
-  // Sample core glyph body (alpha > 85 avoids fuzzy edge halos that expand letters)
-  const step = Math.max(2, Math.round(2.0 * dpr));
+  // Sample core glyph body with ~2.65px spacing so individual dots are distinct and visible!
+  const step = Math.max(2, Math.round(2.65 * dpr));
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {
       const i = (y * width + x) * 4;
@@ -437,51 +441,72 @@ export function createParticleEngine(canvas, opts = {}) {
   }
 
   // ── Assign targets to particles ───────────────────────────
+  // ── Assign targets to particles ───────────────────────────
   function assignTargets(pts, phase) {
     const plen = pts.length;
     if (plen === 0) return;
-    const isText = (phase === 'greet' || phase === 'tagline');
+    const isText = (phase.startsWith('greet') || phase === 'tagline');
 
-    for (let i = 0; i < N; i++) {
-      const p = particles[i];
+    if (isText && particles.length > 0) {
+      // Spatial sort: top-to-bottom, left-to-right (weight y more than x)
+      // This ensures that when morphing from English -> Hindi -> Odia -> Tagline,
+      // particles slide smoothly into the closest matching letter stroke with minimal travel distance!
+      const sortedPts = pts.slice().sort((a, b) => (a.y * 3 + a.x) - (b.y * 3 + b.x));
 
-      if (isText) {
-        if (i < plen) {
-          // Exactly 1 particle per target point: zero piling, crystal-clear glyphs!
-          const tp = pts[i];
+      // Sort existing active particles by their current coordinate position
+      const particleIndices = [];
+      for (let i = 0; i < N; i++) particleIndices.push(i);
+      particleIndices.sort((ia, ib) => {
+        const pa = particles[ia], pb = particles[ib];
+        return (pa.y * 3 + pa.x) - (pb.y * 3 + pb.x);
+      });
+
+      for (let k = 0; k < N; k++) {
+        const p = particles[particleIndices[k]];
+
+        if (k < plen) {
+          const tp = sortedPts[k];
           p.tx = tp.x;
           p.ty = tp.y;
-          p.delay = rng() * 0.15;
+          // Organic calligraphy wave delay: left-to-right sweep
+          p.delay = (tp.x / (W || 1)) * 0.12 + rng() * 0.04;
           p.isOutline = !!tp.isOutline;
           p.role = phase;
 
-          if (phase === 'greet') {
-            // Authentic festival colors: rich dark ink (88%) with sparkling vermilion (12%)
-            p.color = rng() < 0.88 ? COLORS.ink : COLORS.red;
-            p.r = portrait ? (1.30 + rng() * 0.25) : (1.45 + rng() * 0.30); // ~2.6px–3.1px diameter
-            p.a = 0.98;
+          // Living pointillism palette:
+          // 82% Deep ink (#2A0E14) + 13% Festive vermilion (#E5383B) + 5% Sparkling marigold (#FF9F1C)
+          // Contrasting dots ensure every individual dot is distinctly visible and gorgeous!
+          const cr = rng();
+          if (cr < 0.82) {
+            p.color = COLORS.ink;
+          } else if (cr < 0.95) {
+            p.color = COLORS.red;
           } else {
-            // Tagline
-            p.color = tp.color || COLORS.ink;
-            p.r = 1.35 + rng() * 0.25;
-            p.a = 0.98;
+            p.color = COLORS.marigold;
           }
+
+          // Distinct, clearly visible circular dots
+          p.r = portrait ? (1.35 + rng() * 0.25) : (1.50 + rng() * 0.30);
+          p.a = 0.96;
         } else {
-          // Extra particles drift softly near outer canvas perimeter, keeping reading zone pristine
-          const side = i % 4;
+          // Extra particles softly drift to outer canvas borders, keeping central text clear
+          const side = k % 4;
           if (side === 0)      { p.tx = rng() * W; p.ty = rng() * (H * 0.08); }
           else if (side === 1) { p.tx = W - rng() * (W * 0.08); p.ty = rng() * H; }
           else if (side === 2) { p.tx = rng() * W; p.ty = H - rng() * (H * 0.08); }
           else                 { p.tx = rng() * (W * 0.08); p.ty = rng() * H; }
-          p.delay = rng() * 0.5;
+          p.delay = rng() * 0.3;
           p.color = pickColor();
-          p.r = 1.0 + rng() * 0.8;
-          p.a = 0.08 + rng() * 0.08; // minimal ambient shimmer
+          p.r = 1.0 + rng() * 0.6;
+          p.a = 0.06 + rng() * 0.06;
           p.isOutline = false;
           p.role = 'ambient';
         }
-      } else {
-        // Truck phase: evenly distribute particles across all truck points
+      }
+    } else {
+      // Truck phase: evenly distribute particles across all truck points
+      for (let i = 0; i < N; i++) {
+        const p = particles[i];
         const idx = Math.floor((i / N) * plen);
         const tp = pts[idx % plen];
         p.tx = tp.x;
@@ -504,7 +529,7 @@ export function createParticleEngine(canvas, opts = {}) {
     for (const p of particles) {
       const dx = p.x - centerX, dy = p.y - centerY;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      const force = 180 + rng() * 260;
+      const force = 90 + rng() * 150;
       p.vx += (dx / dist) * force;
       p.vy += (dy / dist) * force;
       p.color = pickColor();
@@ -513,10 +538,9 @@ export function createParticleEngine(canvas, opts = {}) {
   }
 
   // ── Get / build greeting targets (in dead center of screen)
-  function getGreetPts(customGreeting) {
-    const greeting = customGreeting || getGreeting();
-    const isHindi = greeting === 'हरे कृष्ण';
-    const isOdia  = greeting === 'ହରେ କୃଷ୍ଣ';
+  function getGreetPts(which = 'en') {
+    const isHindi = which === 'hi' || which === 'हरे कृष्ण';
+    const isOdia  = which === 'or' || which === 'ହରେ କୃଷ୍ଣ';
 
     let greetText;
     let fsize;
@@ -542,10 +566,22 @@ export function createParticleEngine(canvas, opts = {}) {
         lineHeight = Math.round(fsize * 1.25);
       }
     } else {
-      greetText = greeting;
-      fsize = Math.min(W * 0.082, 105);
-      letterSpacing = isHindi || isOdia ? '2px' : '5px';
-      lineHeight = Math.round(fsize * 1.25);
+      if (isHindi) {
+        greetText = 'हरे कृष्ण';
+        fsize = Math.min(W * 0.078, 98);
+        letterSpacing = '3px';
+        lineHeight = Math.round(fsize * 1.30);
+      } else if (isOdia) {
+        greetText = 'ହରେ କୃଷ୍ଣ';
+        fsize = Math.min(W * 0.075, 94);
+        letterSpacing = '2px';
+        lineHeight = Math.round(fsize * 1.30);
+      } else {
+        greetText = 'Hare Kṛṣṇa';
+        fsize = Math.min(W * 0.082, 105);
+        letterSpacing = '5px';
+        lineHeight = Math.round(fsize * 1.25);
+      }
     }
 
     let font;
@@ -572,35 +608,20 @@ export function createParticleEngine(canvas, opts = {}) {
     // Prominent, large display sizing for maximum legibility and dramatic impact
     const fsize = portrait
       ? Math.min(W * 0.082, 38)
-      : Math.min(W * 0.052, 74);
+      : Math.min(W * 0.052, 72);
 
     let tagText;
     if (portrait) {
-      tagText = lang === 'hi'
-        ? ['एक दरवाज़ा।', 'कई दुनिया।']
-        : lang === 'or'
-        ? ['ଗୋଟିଏ କବାଟ।', 'ଅନେକ ଦୁନିଆ।']
-        : ['One door.', 'Many worlds.'];
+      tagText = ['One Door', 'Many Worlds'];
     } else {
-      tagText = lang === 'hi'
-        ? 'एक दरवाज़ा। कई दुनिया।'
-        : lang === 'or'
-        ? 'ଗୋଟିଏ କବାଟ। ଅନେକ ଦୁନିଆ।'
-        : 'One door. Many worlds.';
+      tagText = 'One Door  Many Worlds';
     }
 
-    let font;
-    if (lang === 'hi') {
-      font = `600 ${Math.round(fsize * 0.95)}px "Hind", "Tiro Devanagari Hindi", serif`;
-    } else if (lang === 'or') {
-      font = `600 ${Math.round(fsize * 0.90)}px "Noto Sans Oriya", "Kalinga", serif`;
-    } else {
-      // 600 semi-bold Cormorant Garamond Roman for crystal-clear letterforms and open counters
-      font = `600 ${fsize}px "Cormorant Garamond", Georgia, serif`;
-    }
+    // 600 semi-bold Cormorant Garamond Roman for crystal-clear letterforms and open counters
+    const font = `600 ${fsize}px "Cormorant Garamond", Georgia, serif`;
 
     taglinePts = textTargets(tagText, font, COLORS.ink, W, H, dpr, {
-      letterSpacing: lang === 'en' ? '3px' : '1px',
+      letterSpacing: portrait ? '2px' : '4px',
       lineHeight: Math.round(fsize * 1.35),
     });
     return taglinePts;
@@ -797,13 +818,6 @@ export function createParticleEngine(canvas, opts = {}) {
   let burstDone = false;
   let greetMorphIndex = -1;
 
-  // Language sequence: starts with active language, then explores the other two
-  const getGreetingSequence = () => {
-    if (lang === 'hi') return ['हरे कृष्ण', 'ହରେ କୃଷ୍ଣ', 'Hare Kṛṣṇa'];
-    if (lang === 'or') return ['ହରେ କୃଷ୍ଣ', 'हरे कृष्ण', 'Hare Kṛṣṇa'];
-    return ['Hare Kṛṣṇa', 'हरे कृष्ण', 'ହରେ କୃଷ୍ଣ'];
-  };
-
   function tickPhase(t) {
     if (skipIntro) {
       if (currentTargetPhase !== 'truck') {
@@ -814,41 +828,57 @@ export function createParticleEngine(canvas, opts = {}) {
       return;
     }
 
-    // Phase 1: petals drift in (0–1s)
+    // Phase 1: Drift in (0 to 0.6s)
 
-    // Phase 2: Greeting held dignified & steady in screen center (1.0s to 4.4s)
-    if (t >= PHASE_GREET_START && t < PHASE_GREET_END) {
-      if (lastPhase !== 'greet') {
-        lastPhase = 'greet';
-        const word = getGreeting();
-        const pts = getGreetPts(word);
-        assignTargets(pts, 'greet');
+    // Phase 2A: English "Hare Kṛṣṇa" (0.6s to 2.6s)
+    if (t >= PHASE_EN_START && t < PHASE_EN_END) {
+      if (lastPhase !== 'greet-en') {
+        lastPhase = 'greet-en';
+        const pts = getGreetPts('en');
+        if (pts.length) assignTargets(pts, 'greet-en');
       }
     }
 
-    // Phase 3: Holi color powder burst (4.8s)
+    // Phase 2B: Hindi "हरे कृष्ण" (2.6s to 4.6s)
+    if (t >= PHASE_HI_START && t < PHASE_HI_END) {
+      if (lastPhase !== 'greet-hi') {
+        lastPhase = 'greet-hi';
+        const pts = getGreetPts('hi');
+        if (pts.length) assignTargets(pts, 'greet-hi');
+      }
+    }
+
+    // Phase 2C: Odia "ହରେ କୃଷ୍ଣ" (4.6s to 6.6s)
+    if (t >= PHASE_OR_START && t < PHASE_OR_END) {
+      if (lastPhase !== 'greet-or') {
+        lastPhase = 'greet-or';
+        const pts = getGreetPts('or');
+        if (pts.length) assignTargets(pts, 'greet-or');
+      }
+    }
+
+    // Phase 3: Gentle Holi celebratory powder bloom (6.6s to 7.1s)
     if (t >= PHASE_BURST_PEAK && !burstDone) {
       burstDone = true;
       burstScatter();
     }
 
-    // Phase 4: Tagline "One door. Many worlds." in screen center (5.3s to 7.8s)
+    // Phase 4: Tagline "One Door Many Worlds" in screen center (7.1s to 9.5s)
     if (t >= PHASE_TAGLINE_START && t < PHASE_TAGLINE_END && lastPhase !== 'tagline') {
       lastPhase = 'tagline';
       burstDone = true;
-      for (const p of particles) p.color = pickColor();
       const pts = getTaglinePts();
       if (pts.length) assignTargets(pts, 'tagline');
     }
 
-    // Phase 5: Stream across into truck on the right side (7.8s to 10.2s)
+    // Phase 5: Stream across into truck on the right side (9.5s to 12.0s)
     if (t >= PHASE_TRUCK_START && lastPhase !== 'truck') {
       lastPhase = 'truck';
       const pts = getTruckPts();
       if (pts.length) assignTargets(pts, 'truck');
     }
 
-    // Intro complete at 10.2s: hero copy fades in on the left
+    // Intro complete at 12.0s: hero copy fades in on the left
     if (t >= PHASE_HERO_FADE && !introComplete) {
       completeIntro();
     }
@@ -929,19 +959,36 @@ export function createParticleEngine(canvas, opts = {}) {
       const pts = getTaglinePts();
       if (pts.length) assignTargets(pts, 'tagline');
       for (const p of particles) { p.x = p.tx; p.y = p.ty; }
-    } else if (clock >= PHASE_GREET_START) {
-      lastPhase = 'greet';
-      const pts = getGreetPts();
-      if (pts.length) assignTargets(pts, 'greet');
+    } else if (clock >= PHASE_OR_START) {
+      lastPhase = 'greet-or';
+      const pts = getGreetPts('or');
+      if (pts.length) assignTargets(pts, 'greet-or');
+      for (const p of particles) { p.x = p.tx; p.y = p.ty; }
+    } else if (clock >= PHASE_HI_START) {
+      lastPhase = 'greet-hi';
+      const pts = getGreetPts('hi');
+      if (pts.length) assignTargets(pts, 'greet-hi');
+      for (const p of particles) { p.x = p.tx; p.y = p.ty; }
+    } else if (clock >= PHASE_EN_START) {
+      lastPhase = 'greet-en';
+      const pts = getGreetPts('en');
+      if (pts.length) assignTargets(pts, 'greet-en');
       for (const p of particles) { p.x = p.tx; p.y = p.ty; }
     }
 
     document.fonts?.ready?.then(() => {
-      greetPts = null;
       taglinePts = null;
-      if (lastPhase === 'greet') {
-        const pts = getGreetPts();
-        assignTargets(pts, 'greet');
+      if (lastPhase === 'greet-en') {
+        const pts = getGreetPts('en');
+        assignTargets(pts, 'greet-en');
+        if (urlT > 0) { for (const p of particles) { p.x = p.tx; p.y = p.ty; } }
+      } else if (lastPhase === 'greet-hi') {
+        const pts = getGreetPts('hi');
+        assignTargets(pts, 'greet-hi');
+        if (urlT > 0) { for (const p of particles) { p.x = p.tx; p.y = p.ty; } }
+      } else if (lastPhase === 'greet-or') {
+        const pts = getGreetPts('or');
+        assignTargets(pts, 'greet-or');
         if (urlT > 0) { for (const p of particles) { p.x = p.tx; p.y = p.ty; } }
       } else if (lastPhase === 'tagline') {
         const pts = getTaglinePts();

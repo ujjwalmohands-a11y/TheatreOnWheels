@@ -100,7 +100,7 @@ export default function HeroLight({ lang = 'en', onLangChange }) {
 
     // Reset intro visibility when engine restarts
     const initT = parseFloat(new URLSearchParams(window.location.search).get('t') || '0');
-    setIntroOk(initT >= 10.2);
+    setIntroOk(initT >= 12.0);
 
     // Destroy old engine on re-init (lang/portrait change)
     engineRef.current?.stop();
