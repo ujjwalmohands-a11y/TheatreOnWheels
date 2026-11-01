@@ -240,7 +240,9 @@ export default function Hero({ lang: propLang, onLangChange }) {
       } else if (sp >= 0.02 && nudged) { nudged = false; nudgeT = 0; setNudge(false); }
 
       const offscreen = hS >= 0.995 || document.hidden || (window.scrollY > window.innerHeight * 1.2);
-      if (!offscreen) { render(T, hS, dt); particles?.draw(dt, T, 1 - clamp(hS * 2.5)); }
+      if (offscreen) return;
+      render(T, hS, dt);
+      particles?.draw(dt, T, 1 - clamp(hS * 2.5));
     };
     raf = requestAnimationFrame(loop);
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };

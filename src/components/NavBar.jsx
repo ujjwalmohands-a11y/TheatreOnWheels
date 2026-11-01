@@ -1,12 +1,62 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './NavBar.css';
 
-const NAV_ITEMS = [
-  { id: 'shows',   label: 'Shows',     href: '#hero' },
-  { id: 'truck',   label: 'The Truck', href: '#truck' },
-  { id: 'route',   label: 'Route',     href: '#places-of-launch' },
-  { id: 'contact', label: 'Contact',   href: '#contact' },
+const DESKTOP_NAV_ITEMS = [
+  { id: 'shows',        label: 'Home',         href: '#hero' },
+  { id: 'experience',   label: 'Experience',   href: '/step-inside.html' },
+  { id: 'about',        label: 'About',        href: '/about.html' },
+  { id: 'achievements', label: 'Achievements', href: '/achievements.html' },
+  { id: 'route',        label: 'Route',        href: '#places-of-launch' },
+  { id: 'contact',      label: 'Contact',      href: '#contact' },
 ];
+
+const MOBILE_NAV_ITEMS = [
+  { id: 'shows',        label: 'Home',               subtitle: 'Main Stage',                href: '#hero',              icon: 'home' },
+  { id: 'experience',   label: 'Experience',         subtitle: 'Step Inside 7D',            href: '/step-inside.html',  icon: 'spark' },
+  { id: 'about',        label: 'About',              subtitle: 'Our Story & Genesis',       href: '/about.html',        icon: 'book' },
+  { id: 'achievements', label: 'Achievements',       subtitle: 'Medals & Incubation Batches', href: '/achievements.html', icon: 'medal' },
+  { id: 'route',        label: 'Route',              subtitle: 'Tour Dates & Stops',        href: '#places-of-launch',  icon: 'compass' },
+  { id: 'reserve',      label: 'Reserve the ticket', subtitle: 'Admit One · Grab Seats',    href: '#reserve',           icon: 'ticket' },
+];
+
+const ICONS = {
+  home: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 9.5L12 3l9 6.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <path d="M9 22V12h6v10"/>
+    </svg>
+  ),
+  spark: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.3"/>
+    </svg>
+  ),
+  book: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+      <path d="M6 6h10M6 10h10"/>
+    </svg>
+  ),
+  medal: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="8" r="6"/>
+      <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+    </svg>
+  ),
+  compass: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="10"/>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" fillOpacity="0.4"/>
+    </svg>
+  ),
+  ticket: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+      <line x1="9" y1="6" x2="9" y2="18" strokeDasharray="2 2"/>
+    </svg>
+  ),
+};
 
 const LANG_OPTIONS = [
   { code: 'en', label: 'EN' },
@@ -101,7 +151,7 @@ export default function NavBar({ currentPage = 'home', onNavigate, lang: propLan
 
   // Sync active page with currentPage prop
   useEffect(() => {
-    if (currentPage === 'about') setActivePage('truck');
+    if (currentPage === 'about') setActivePage('about');
     else if (currentPage === 'home') setActivePage('shows');
   }, [currentPage]);
 
@@ -117,11 +167,23 @@ export default function NavBar({ currentPage = 'home', onNavigate, lang: propLan
       } else {
         document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
       }
-    } else if (pageId === 'truck') {
+    } else if (pageId === 'experience') {
+      if (onNavigate) {
+        onNavigate('experience');
+      } else {
+        window.location.href = '/step-inside.html';
+      }
+    } else if (pageId === 'about' || pageId === 'truck') {
       if (onNavigate) {
         onNavigate('about');
       } else {
         window.location.href = '/about.html';
+      }
+    } else if (pageId === 'achievements') {
+      if (onNavigate) {
+        onNavigate('achievements');
+      } else {
+        window.location.href = '/achievements.html';
       }
     } else if (pageId === 'route') {
       if (currentPage !== 'home' && onNavigate) {
@@ -199,7 +261,7 @@ export default function NavBar({ currentPage = 'home', onNavigate, lang: propLan
             aria-hidden="true"
           />
           <ul>
-            {NAV_ITEMS.map((item) => (
+            {DESKTOP_NAV_ITEMS.map((item) => (
               <li key={item.id}>
                 <a
                   href={item.href}
@@ -269,80 +331,53 @@ export default function NavBar({ currentPage = 'home', onNavigate, lang: propLan
         </div>
       </nav>
 
-      {/* Mobile Card Menu */}
+      {/* Mobile Card Menu: 4 items (Home, Experience, Route, Reserve the ticket) */}
       <div
         className="menu"
         id="menu"
         ref={menuRef}
-        inert={!menuOpen ? '' : undefined}
+        inert={!menuOpen ? true : undefined}
       >
-        <ul>
-          {NAV_ITEMS.map((item, idx) => (
+        <div className="menu-header">
+          <span className="menu-header__beacon" aria-hidden="true" />
+          <span className="menu-header__text">7D THEATRE ON WHEELS</span>
+          <span className="menu-header__tag">LIVE</span>
+        </div>
+        <ul className="menu-list">
+          {MOBILE_NAV_ITEMS.map((item, idx) => (
             <li key={item.id}>
               <a
-                className="m-link"
+                className={`m-link ${item.id === 'reserve' ? 'm-link--reserve' : ''}`}
                 style={{ '--i': idx }}
                 href={item.href}
                 data-page={item.id}
                 aria-current={activePage === item.id ? 'page' : undefined}
                 onClick={(e) => handleNav(e, item.id)}
               >
-                {item.label}{' '}
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 8h9M8.5 4l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <span className="m-link__left">
+                  <span className="m-link__icon-box" aria-hidden="true">
+                    {ICONS[item.icon]}
+                  </span>
+                  <span className="m-link__titles">
+                    <span className="m-link__label">{item.label}</span>
+                    <span className="m-link__sub">{item.subtitle}</span>
+                  </span>
+                </span>
+                <span className="m-link__arrow" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M3 8h9M8.5 4l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </a>
             </li>
           ))}
         </ul>
-        <div className="menu-foot">
-          <div className="tow-lang tow-lang--menu" role="group" aria-label="Language">
-            {LANG_OPTIONS.map((opt) => (
-              <button
-                key={opt.code}
-                type="button"
-                className="tow-lang-btn"
-                aria-pressed={activeLang === opt.code}
-                onClick={() => handleLangSelect(opt.code)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          <a
-            className="ticket ticket--block"
-            href="#reserve"
-            data-reserve
-            onClick={(e) => handleNav(e, 'reserve')}
-          >
-            <span className="t-label">Reserve a Seat</span>
-            <span className="t-arrow">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M3 8h9M8.5 4l4 4-4 4"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </a>
-          <div className="next-stop">
-            <span>
-              <span className="dot" />
-              Next stop
-            </span>
-            <b>City Park · Sat 7:30 PM</b>
-          </div>
-        </div>
       </div>
     </header>
   );

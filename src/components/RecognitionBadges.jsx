@@ -4,8 +4,9 @@ import './RecognitionBadges.css';
 export default function RecognitionBadges() {
   return (
     <section className="recognition" id="recognition">
+      <span id="achievements" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
       <div className="head">
-        <h2>RECOGNITION</h2>
+        <h2>ACCREDITATION & ACHIEVEMENTS</h2>
         <i />
       </div>
 
@@ -150,6 +151,7 @@ export default function RecognitionBadges() {
           <p>
             <span className="cap-dot" />
             <b>Incubated at</b>IIT Bhubaneswar
+            <span className="badge-batch">Cohort 2023–24</span>
           </p>
         </div>
 
@@ -285,6 +287,7 @@ export default function RecognitionBadges() {
           <p>
             <span className="cap-dot" />
             <b>Recognised by</b>Startup India
+            <span className="badge-batch">DPIIT National</span>
           </p>
         </div>
 
@@ -430,6 +433,7 @@ export default function RecognitionBadges() {
           <p>
             <span className="cap-dot" />
             <b>Recognised by</b>Startup Odisha
+            <span className="badge-batch">Incubated in Bhubaneswar</span>
           </p>
         </div>
       </div>

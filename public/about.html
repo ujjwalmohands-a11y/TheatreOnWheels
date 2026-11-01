@@ -745,6 +745,180 @@ footer{
   .cmp-grid{grid-template-columns:1fr}
 }
 
+/* ================================================================
+   §8.5  ACCREDITATION & ACHIEVEMENTS
+================================================================ */
+#achievements {
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  padding-block: 88px;
+}
+.achieve-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+.achieve-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 28px;
+  margin-top: 24px;
+}
+.achieve-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 36px 24px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--speed), border-color var(--speed), box-shadow var(--speed);
+}
+.achieve-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--card-accent, var(--accent));
+  opacity: 0.9;
+}
+@media (hover: hover) and (pointer: fine) {
+  .achieve-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--card-accent, var(--accent));
+    box-shadow: 0 20px 42px -12px rgba(0, 0, 0, 0.5), 0 0 24px -6px var(--card-glow, transparent);
+  }
+}
+.achieve-medal-wrap {
+  width: 175px;
+  height: 175px;
+  margin-bottom: 8px;
+  display: grid;
+  place-items: center;
+}
+.achieve-medal-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.achieve-medal-svg .aura {
+  opacity: 0.18;
+  filter: blur(14px);
+  transition: opacity var(--speed);
+}
+.achieve-card:hover .achieve-medal-svg .aura {
+  opacity: 0.35;
+}
+.achieve-medal-svg .spin {
+  transform-origin: 100px 100px;
+}
+.achieve-medal-svg .spin.ring {
+  animation: achieve-spin 26s linear infinite;
+}
+.achieve-medal-svg .spin.rev {
+  animation: achieve-spin-rev 18s linear infinite;
+}
+.achieve-medal-svg .spin.orbit {
+  animation: achieve-spin 14s linear infinite;
+}
+.achieve-medal-svg .breathe {
+  animation: achieve-breathe 4s ease-in-out infinite;
+  transform-origin: 100px 78px;
+}
+@keyframes achieve-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes achieve-spin-rev {
+  to { transform: rotate(-360deg); }
+}
+@keyframes achieve-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.achieve-batch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--accent));
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+.achieve-batch-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--card-accent, var(--accent));
+  box-shadow: 0 0 6px var(--card-accent, var(--accent));
+}
+.achieve-card h3 {
+  font-family: var(--font-sub);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.achieve-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.achieve-desc {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+.achieve-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+  padding: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.achieve-metric {
+  text-align: center;
+  padding: 8px 12px;
+}
+.achieve-metric-val {
+  font-family: var(--font-head);
+  font-size: 2.2rem;
+  color: var(--accent);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+.achieve-metric-lbl {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .achieve-medal-svg .spin,
+  .achieve-medal-svg .breathe {
+    animation: none !important;
+  }
+}
+
 /* ── Custom cursor overrides ──────────────────────────────────── */
 @media (hover: hover) and (pointer: fine) {
   html, body { cursor: url('/cursors/Pointer.cur'), auto; }
@@ -803,9 +977,11 @@ footer{
 
     <nav class="tow-nav__menu" aria-label="Main Navigation">
       <a href="/#hero" class="tow-nav__link">Arrival</a>
+      <a href="/step-inside.html" class="tow-nav__link">Experience</a>
       <a href="/#places-of-launch" class="tow-nav__link">Places of Launch</a>
       <a href="/#reserve" class="tow-nav__link">Journey Pass</a>
       <a href="/about.html" class="tow-nav__link is-active" aria-current="page">About</a>
+      <a href="/achievements.html" class="tow-nav__link">Achievements</a>
     </nav>
 
     <div class="tow-nav__actions">
@@ -1342,6 +1518,220 @@ footer{
           <div class="bar-row"><div class="bar-lbl"><span>Flexibility</span><span>95%</span></div><div class="bar-track"><div class="bar-fill" style="--s:.95"></div></div></div>
           <div class="bar-row"><div class="bar-lbl"><span>Inclusivity</span><span>85%</span></div><div class="bar-track"><div class="bar-fill" style="--s:.85"></div></div></div>
         </div>
+      </div>
+    </div>
+  </div>
+<!-- ================================================================
+     §8.5  ACCREDITATION & ACHIEVEMENTS
+================================================================ -->
+<section id="achievements">
+  <div class="container">
+    <div class="achieve-header reveal">
+      <p class="section-tag">Accreditation & Achievements</p>
+      <h2><span class="h-wrap">National Recognition & Incubation<span class="h-line"></span></span></h2>
+      <p style="color:var(--muted);font-size:1.02em;margin-top:14px;line-height:1.65">
+        Theatre on Wheels is proudly incubated at <strong>IIT Bhubaneswar</strong> and recognized by <strong>Startup Odisha</strong> and <strong>Startup India</strong>, engineering world-class mobile cinema technology for every corner of the nation.
+      </p>
+    </div>
+
+    <div class="achieve-grid">
+      <!-- Card 1: IIT Bhubaneswar -->
+      <div class="achieve-card reveal" style="--card-accent:#ffb703;--card-glow:rgba(255,183,3,0.3)">
+        <div class="achieve-medal-wrap">
+          <svg class="achieve-medal-svg" viewBox="0 0 200 200" role="img" aria-label="IIT Bhubaneswar Incubation Medal">
+            <defs>
+              <radialGradient id="ach-ga" cx=".5" cy=".3" r=".8">
+                <stop offset="0" stop-color="#ffb703" stop-opacity=".24"/>
+                <stop offset="1" stop-color="#ffb703" stop-opacity=".02"/>
+              </radialGradient>
+              <linearGradient id="ach-sa" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffb703"/>
+                <stop offset="1" stop-color="#ffb703" stop-opacity=".2"/>
+              </linearGradient>
+              <path id="ach-pa" d="M20,100 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/>
+            </defs>
+            <circle class="aura" cx="100" cy="100" r="70" fill="#ffb703"/>
+            <circle cx="100" cy="100" r="96" stroke="#ffb703" stroke-width="0.8" fill="none" opacity="0.4"/>
+            <g class="spin rev">
+              <circle cx="100" cy="100" r="96" stroke="#ffb703" stroke-width="1.8" stroke-dasharray="14 36" fill="none" opacity="0.65"/>
+            </g>
+            <g class="spin orbit">
+              <circle cx="100" cy="4" r="3" fill="#ffb703"/>
+            </g>
+            <g class="spin ring">
+              <text fill="#ffb703" font-size="8.8" font-family="'Orbitron',sans-serif" font-weight="600" letter-spacing="2.2" textLength="496" lengthAdjust="spacing">
+                <textPath href="#ach-pa" startOffset="0">
+                  IIT BHUBANESWAR · INCUBATED · RESEARCH PARK ·{' '}
+                </textPath>
+              </text>
+            </g>
+            <circle cx="100" cy="100" r="64" fill="url(#ach-ga)" stroke="url(#ach-sa)" stroke-width="1.2"/>
+            <g class="breathe">
+              <!-- Sacred Temple Kalasa & Spire Body -->
+              <circle cx="100" cy="62.5" r="1.5" fill="#ffb703"/>
+              <line x1="100" y1="60" x2="100" y2="63.5" stroke="#ffb703" stroke-width="1.2"/>
+              <ellipse cx="100" cy="65" rx="3.2" ry="1.2" fill="#ffb703" opacity="0.85"/>
+              <path d="M97.5 66 C97 70, 95.5 76, 94.5 86 L105.5 86 C104.5 76, 103 70, 102.5 66 Z" fill="rgba(255,183,3,0.18)" stroke="#ffb703" stroke-width="1.3"/>
+              <line x1="97" y1="69.5" x2="103" y2="69.5" stroke="#ffb703" stroke-width="1"/>
+              <line x1="96.2" y1="73.5" x2="103.8" y2="73.5" stroke="#ffb703" stroke-width="1"/>
+              <line x1="95.5" y1="77.5" x2="104.5" y2="77.5" stroke="#ffb703" stroke-width="1"/>
+              <line x1="95" y1="81.5" x2="105" y2="81.5" stroke="#ffb703" stroke-width="1"/>
+              <path d="M98 86 L98 81 C98 79.5 102 79.5 102 81 L102 86 Z" fill="#ffb703"/>
+              <line x1="91" y1="86" x2="109" y2="86" stroke="#ffb703" stroke-width="1.4"/>
+            </g>
+            <text x="100" y="118" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="12" font-weight="700" fill="#f5f1e8" letter-spacing="1">IIT</text>
+            <text x="100" y="131" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="9" font-weight="600" fill="#ffb703" letter-spacing="0.8">BHUBANESWAR</text>
+            <line x1="88" y1="141" x2="112" y2="141" stroke="#ffb703" stroke-width="0.8" opacity="0.5"/>
+          </svg>
+        </div>
+
+        <div class="achieve-batch-pill">
+          <span class="achieve-batch-dot"></span>
+          <span>Incubated Cohort 2023–24</span>
+        </div>
+        <h3>IIT Bhubaneswar</h3>
+        <div class="achieve-role">Academic & DeepTech Incubation</div>
+        <p class="achieve-desc">
+          Prototyped and engineered at IIT Bhubaneswar Research Park. The mathematical models for the decoupled acoustic capsule and vibration damping systems were formulated in campus laboratories.
+        </p>
+      </div>
+
+      <!-- Card 2: Startup Odisha -->
+      <div class="achieve-card reveal d1" style="--card-accent:#4cc9f0;--card-glow:rgba(76,201,240,0.3)">
+        <div class="achieve-medal-wrap">
+          <svg class="achieve-medal-svg" viewBox="0 0 200 200" role="img" aria-label="Startup Odisha Recognition Medal">
+            <defs>
+              <radialGradient id="ach-gc" cx=".5" cy=".3" r=".8">
+                <stop offset="0" stop-color="#4cc9f0" stop-opacity=".24"/>
+                <stop offset="1" stop-color="#4cc9f0" stop-opacity=".02"/>
+              </radialGradient>
+              <linearGradient id="ach-sc" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#4cc9f0"/>
+                <stop offset="1" stop-color="#4cc9f0" stop-opacity=".2"/>
+              </linearGradient>
+              <path id="ach-pc" d="M20,100 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/>
+            </defs>
+            <circle class="aura" cx="100" cy="100" r="70" fill="#4cc9f0"/>
+            <circle cx="100" cy="100" r="96" stroke="#4cc9f0" stroke-width="0.8" fill="none" opacity="0.4"/>
+            <g class="spin rev">
+              <circle cx="100" cy="100" r="96" stroke="#4cc9f0" stroke-width="1.8" stroke-dasharray="14 36" fill="none" opacity="0.65"/>
+            </g>
+            <g class="spin orbit">
+              <circle cx="100" cy="4" r="3" fill="#4cc9f0"/>
+            </g>
+            <g class="spin ring">
+              <text fill="#4cc9f0" font-size="8.8" font-family="'Orbitron',sans-serif" font-weight="600" letter-spacing="2.2" textLength="496" lengthAdjust="spacing">
+                <textPath href="#ach-pc" startOffset="0">
+                  STARTUP ODISHA · RECOGNISED · STATE GRANTEE ·{' '}
+                </textPath>
+              </text>
+            </g>
+            <circle cx="100" cy="100" r="64" fill="url(#ach-gc)" stroke="url(#ach-sc)" stroke-width="1.2"/>
+            <g class="breathe">
+              <!-- Konark Solar Chakra & Wave Flight Arrow -->
+              <circle cx="93" cy="82" r="5.2" stroke="#4cc9f0" stroke-width="1.2" fill="none" opacity="0.7"/>
+              <circle cx="93" cy="82" r="1.8" fill="#4cc9f0"/>
+              <line x1="93" y1="75.5" x2="93" y2="77.5" stroke="#4cc9f0" stroke-width="1"/>
+              <line x1="93" y1="86.5" x2="93" y2="88.5" stroke="#4cc9f0" stroke-width="1"/>
+              <line x1="86.5" y1="82" x2="88.5" y2="82" stroke="#4cc9f0" stroke-width="1"/>
+              <line x1="97.5" y1="82" x2="99.5" y2="82" stroke="#4cc9f0" stroke-width="1"/>
+              <path d="M96 80 L112 63 L110 76 L116 79 L102 82 Z" fill="#4cc9f0" opacity="0.95"/>
+              <path d="M83 85 C89 89, 98 88, 107 83 C111 81, 114 79, 117 75" fill="none" stroke="#4cc9f0" stroke-width="1.4"/>
+            </g>
+            <text x="100" y="118" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="12" font-weight="700" fill="#f5f1e8" letter-spacing="1">STARTUP</text>
+            <text x="100" y="131" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="9" font-weight="600" fill="#4cc9f0" letter-spacing="0.8">ODISHA</text>
+            <line x1="88" y1="141" x2="112" y2="141" stroke="#4cc9f0" stroke-width="0.8" opacity="0.5"/>
+          </svg>
+        </div>
+
+        <div class="achieve-batch-pill">
+          <span class="achieve-batch-dot"></span>
+          <span>Incubated in Bhubaneswar</span>
+        </div>
+        <h3>Startup Odisha</h3>
+        <div class="achieve-role">Dept. of MSME · Govt. of Odisha</div>
+        <p class="achieve-desc">
+          Recognized and supported under the Government of Odisha's strategic startup mission. Recipient of state innovation backing to scale mobile immersive heritage storytelling throughout eastern India.
+        </p>
+      </div>
+
+      <!-- Card 3: Startup India -->
+      <div class="achieve-card reveal d2" style="--card-accent:#ff7a29;--card-glow:rgba(255,122,41,0.3)">
+        <div class="achieve-medal-wrap">
+          <svg class="achieve-medal-svg" viewBox="0 0 200 200" role="img" aria-label="Startup India Recognition Medal">
+            <defs>
+              <radialGradient id="ach-gb" cx=".5" cy=".3" r=".8">
+                <stop offset="0" stop-color="#ff7a29" stop-opacity=".24"/>
+                <stop offset="1" stop-color="#ff7a29" stop-opacity=".02"/>
+              </radialGradient>
+              <linearGradient id="ach-sb" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ff7a29"/>
+                <stop offset="1" stop-color="#ff7a29" stop-opacity=".2"/>
+              </linearGradient>
+              <path id="ach-pb" d="M20,100 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/>
+            </defs>
+            <circle class="aura" cx="100" cy="100" r="70" fill="#ff7a29"/>
+            <circle cx="100" cy="100" r="96" stroke="#ff7a29" stroke-width="0.8" fill="none" opacity="0.4"/>
+            <g class="spin rev">
+              <circle cx="100" cy="100" r="96" stroke="#ff7a29" stroke-width="1.8" stroke-dasharray="14 36" fill="none" opacity="0.65"/>
+            </g>
+            <g class="spin orbit">
+              <circle cx="100" cy="4" r="3" fill="#ff7a29"/>
+            </g>
+            <g class="spin ring">
+              <text fill="#ff7a29" font-size="8.8" font-family="'Orbitron',sans-serif" font-weight="600" letter-spacing="2.2" textLength="496" lengthAdjust="spacing">
+                <textPath href="#ach-pb" startOffset="0">
+                  STARTUP INDIA · RECOGNISED · DPIIT ACCREDITED ·{' '}
+                </textPath>
+              </text>
+            </g>
+            <circle cx="100" cy="100" r="64" fill="url(#ach-gb)" stroke="url(#ach-sb)" stroke-width="1.2"/>
+            <g class="breathe">
+              <!-- Official Hashtag + Ascending Flight Arrow -->
+              <g stroke="#ff7a29" stroke-width="1.6" opacity="0.95">
+                <line x1="85" y1="74" x2="94" y2="74"/>
+                <line x1="84" y1="80" x2="93" y2="80"/>
+                <line x1="88" y1="69" x2="86" y2="85"/>
+                <line x1="92" y1="69" x2="90" y2="85"/>
+              </g>
+              <path d="M102 63 L115 74 L110 74 L110 83 L104 83 L104 77 L98 77 L98 74 L102 74 Z" fill="#ff7a29"/>
+              <line x1="83" y1="87" x2="117" y2="87" stroke="#ff7a29" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>
+            </g>
+            <text x="100" y="118" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="12" font-weight="700" fill="#f5f1e8" letter-spacing="1">STARTUP</text>
+            <text x="100" y="131" text-anchor="middle" font-family="'Poppins',sans-serif" font-size="9" font-weight="600" fill="#ff7a29" letter-spacing="0.8">INDIA</text>
+            <line x1="88" y1="141" x2="112" y2="141" stroke="#ff7a29" stroke-width="0.8" opacity="0.5"/>
+          </svg>
+        </div>
+
+        <div class="achieve-batch-pill">
+          <span class="achieve-batch-dot"></span>
+          <span>DPIIT National Accreditation</span>
+        </div>
+        <h3>Startup India</h3>
+        <div class="achieve-role">DPIIT · Government of India</div>
+        <p class="achieve-desc">
+          Accredited by the Department for Promotion of Industry and Internal Trade as a pioneering deep-tech initiative expanding equitable cultural entertainment across Indian cities.
+        </p>
+      </div>
+    </div>
+
+    <!-- Key Milestone Metrics Strip -->
+    <div class="achieve-metrics reveal">
+      <div class="achieve-metric">
+        <div class="achieve-metric-val">40,000+</div>
+        <div class="achieve-metric-lbl">Spectators On Tour</div>
+      </div>
+      <div class="achieve-metric">
+        <div class="achieve-metric-val">100+</div>
+        <div class="achieve-metric-lbl">Cities on Route</div>
+      </div>
+      <div class="achieve-metric">
+        <div class="achieve-metric-val">57 dB</div>
+        <div class="achieve-metric-lbl">Acoustic Isolation</div>
+      </div>
+      <div class="achieve-metric">
+        <div class="achieve-metric-val">5–250 Hz</div>
+        <div class="achieve-metric-lbl">Haptic Infrasonics</div>
       </div>
     </div>
   </div>

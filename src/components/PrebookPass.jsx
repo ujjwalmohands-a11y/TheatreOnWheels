@@ -94,10 +94,8 @@ export default function PrebookPass({
   const [errors, setErrors] = useState({});
   const [stage, setStage] = useState('idle'); // 'idle' | 'tearing' | 'confirmed'
   const [refCode, setRefCode] = useState('');
-  const [fontSize, setFontSize] = useState(48);
   const [destOpen, setDestOpen] = useState(false);
 
-  const holderRef = useRef(null);
   const destDropdownRef = useRef(null);
   const tearBadgeRef = useRef(null);
 
@@ -138,21 +136,6 @@ export default function PrebookPass({
     };
   }, [destOpen]);
 
-  // Fit Holder name dynamically to available container width
-  const fitHolder = useCallback(() => {
-    if (!holderRef.current || !holderRef.current.parentNode) return;
-    const parentWidth = holderRef.current.parentNode.clientWidth;
-    const charCount = (formData.name.trim() || 'GUEST').length;
-    const calculated = Math.max(24, Math.min(52, parentWidth / (0.7 * Math.max(5, charCount))));
-    setFontSize(calculated);
-  }, [formData.name]);
-
-  useEffect(() => {
-    fitHolder();
-    window.addEventListener('resize', fitHolder);
-    return () => window.removeEventListener('resize', fitHolder);
-  }, [fitHolder]);
-
   // Validation
   const validate = () => {
     const newErrors = {};
@@ -166,9 +149,6 @@ export default function PrebookPass({
       newErrors.destination = true;
     }
     const cleanWa = formData.whatsapp.replace(/\D/g, '');
-    if (cleanWa.length < 8) {
-      newErrors.whatsapp = true;
-    }
     if (cleanWa.length < 8) {
       newErrors.whatsapp = true;
     }
@@ -280,18 +260,9 @@ export default function PrebookPass({
                 <div
                   className={`po-holder ${formData.name.trim() ? 'filled' : ''}`}
                   id="po-holder"
-                  ref={holderRef}
-                  style={{ fontSize: `${fontSize}px` }}
                   aria-live="polite"
                 >
-                  {displayName.split('').map((char, index) => (
-                    <span
-                      key={`${index}-${char}`}
-                      className={index === displayName.length - 1 && formData.name.trim() ? 'pop' : ''}
-                    >
-                      {char === ' ' ? '\u00A0' : char}
-                    </span>
-                  ))}
+                  {displayName}
                 </div>
                 <div className="po-route">
                   <span>{formData.city || 'Your City'}</span>

@@ -139,7 +139,7 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
       }
 
       // Track active section for pill subnav
-      const sections = ['story', 'specs', 'sensory', 'odyssey', 'trust'];
+      const sections = ['story', 'specs', 'sensory', 'odyssey', 'achievements', 'trust'];
       for (const id of sections) {
         const el = document.getElementById(id);
         if (el) {
@@ -237,10 +237,10 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
           </button>
           <button
             type="button"
-            className={`about-subnav__link ${activeSection === 'trust' ? 'is-active' : ''}`}
-            onClick={() => scrollTo('trust')}
+            className={`about-subnav__link ${activeSection === 'achievements' || activeSection === 'trust' ? 'is-active' : ''}`}
+            onClick={() => scrollTo('achievements')}
           >
-            Incubation
+            Achievements
           </button>
         </nav>
       </div>
@@ -749,14 +749,15 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
         </div>
       </section>
 
-      {/* ── CHAPTER 5: TRUST & INCUBATION ───────────────────────── */}
-      <section id="trust" className="about-section">
+      {/* ── CHAPTER 5: ACCREDITATION, ACHIEVEMENTS & INCUBATION ──── */}
+      <section id="achievements" className="about-section">
+        <span id="trust" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
         <div className="container">
           <div className="about-section-header text-center reveal-block">
-            <span className="eyebrow">Chapter V — Backing & Pedigree</span>
+            <span className="eyebrow">Chapter V — Medals, Incubation & Achievements</span>
             <h2>Incubated by National Institutions</h2>
             <p>
-              TheatreOnWheels is backed by India’s premier technical institutes and government innovation programs.
+              TheatreOnWheels is incubated in Bhubaneswar under Startup Odisha, mentored at IIT Bhubaneswar, and recognized nationally by Startup India.
             </p>
           </div>
 
@@ -780,6 +781,10 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
                   <line x1="10.5" y1="26" x2="21.5" y2="26" strokeWidth="0.9" opacity="0.7" />
                 </svg>
               </div>
+              <div className="about-batch-pill">
+                <span className="about-batch-dot" />
+                <span>Incubated Cohort 2023–24</span>
+              </div>
               <h3>IIT Bhubaneswar</h3>
               <div className="about-trust-role">Academic & Technology Incubation</div>
               <p>
@@ -787,9 +792,36 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
               </p>
             </div>
 
-            {/* Trust Card 2: Startup India */}
+            {/* Trust Card 2: Startup Odisha */}
             <div className="about-trust-card reveal-block delay-1">
-              <div className="about-trust-icon-ring" aria-hidden="true">
+              <div className="about-trust-icon-ring" aria-hidden="true" style={{ color: 'var(--c-teal)' }}>
+                <svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                  {/* Startup Odisha Official Konark Solar Chakra & Wave Flight Arrow */}
+                  <circle cx="11" cy="19" r="4.2" strokeWidth="1" opacity="0.7" />
+                  <circle cx="11" cy="19" r="1.5" fill="currentColor" />
+                  <line x1="11" y1="14" x2="11" y2="15.5" strokeWidth="0.9" />
+                  <line x1="11" y1="22.5" x2="11" y2="24" strokeWidth="0.9" />
+                  <line x1="6" y1="19" x2="7.5" y2="19" strokeWidth="0.9" />
+                  <line x1="14.5" y1="19" x2="16" y2="19" strokeWidth="0.9" />
+                  <path d="M13 18 L25 6 L23 16 L27 18 L17 21 Z" fill="currentColor" strokeWidth="1.2" opacity="0.9" />
+                  <path d="M19 12 L25 6 L20 8.5 Z" fill="#ffffff" stroke="none" opacity="0.8" />
+                  <path d="M5 22 C9 25, 16 24, 23 20 C25.5 18.5, 27.5 17, 29 14" strokeWidth="1.2" />
+                </svg>
+              </div>
+              <div className="about-batch-pill" style={{ borderColor: 'rgba(76,201,240,0.4)', color: '#4cc9f0' }}>
+                <span className="about-batch-dot" style={{ background: '#4cc9f0', boxShadow: '0 0 8px #4cc9f0' }} />
+                <span>Incubated in Bhubaneswar</span>
+              </div>
+              <h3>Startup Odisha</h3>
+              <div className="about-trust-role">State Strategic Innovation Grant</div>
+              <p>
+                Supported by the Government of Odisha to spearhead mobile cultural immersion, heritage storytelling, and educational outreach to youth throughout eastern India.
+              </p>
+            </div>
+
+            {/* Trust Card 3: Startup India */}
+            <div className="about-trust-card reveal-block delay-2">
+              <div className="about-trust-icon-ring" aria-hidden="true" style={{ color: 'var(--c-rust)' }}>
                 <svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                   {/* Startup India Official Hashtag & Ascending Arrow */}
                   <g strokeWidth="1.3" opacity="0.9">
@@ -804,33 +836,14 @@ export default function AboutPage({ onNavigateHome, onNavigateToReserve }) {
                   <circle cx="25" cy="25" r="1.2" fill="currentColor" />
                 </svg>
               </div>
+              <div className="about-batch-pill" style={{ borderColor: 'rgba(255,122,41,0.4)', color: '#ff7a29' }}>
+                <span className="about-batch-dot" style={{ background: '#ff7a29', boxShadow: '0 0 8px #ff7a29' }} />
+                <span>DPIIT National Accreditation</span>
+              </div>
               <h3>Startup India</h3>
               <div className="about-trust-role">Department for Promotion of Industry</div>
               <p>
                 Recognized under the Government of India's flagship initiative for groundbreaking experiential technology and grassroots entertainment delivery models.
-              </p>
-            </div>
-
-            {/* Trust Card 3: Startup Odisha */}
-            <div className="about-trust-card reveal-block delay-2">
-              <div className="about-trust-icon-ring" aria-hidden="true">
-                <svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                  {/* Startup Odisha Official Konark Solar Chakra & Wave Flight Arrow */}
-                  <circle cx="11" cy="19" r="4.2" strokeWidth="1" opacity="0.7" />
-                  <circle cx="11" cy="19" r="1.5" fill="currentColor" />
-                  <line x1="11" y1="14" x2="11" y2="15.5" strokeWidth="0.9" />
-                  <line x1="11" y1="22.5" x2="11" y2="24" strokeWidth="0.9" />
-                  <line x1="6" y1="19" x2="7.5" y2="19" strokeWidth="0.9" />
-                  <line x1="14.5" y1="19" x2="16" y2="19" strokeWidth="0.9" />
-                  <path d="M13 18 L25 6 L23 16 L27 18 L17 21 Z" fill="currentColor" strokeWidth="1.2" opacity="0.9" />
-                  <path d="M19 12 L25 6 L20 8.5 Z" fill="#ffffff" stroke="none" opacity="0.8" />
-                  <path d="M5 22 C9 25, 16 24, 23 20 C25.5 18.5, 27.5 17, 29 14" strokeWidth="1.2" />
-                </svg>
-              </div>
-              <h3>Startup Odisha</h3>
-              <div className="about-trust-role">State Strategic Innovation Grant</div>
-              <p>
-                Supported by the Government of Odisha to spearhead mobile cultural immersion, heritage storytelling, and educational outreach to youth throughout eastern India.
               </p>
             </div>
           </div>

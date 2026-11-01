@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>7D Experience — Theatre on Wheels</title>
+<meta name="description" content="Try our 7D theater from your phone: a dragon leaves the screen and eight effects follow it into the room.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/css/theater.css">
+<link rel="stylesheet" href="css/theater.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="/" class="mark" title="Back to Theatre on Wheels home"><span class="mark-7d">7D</span><span class="mark-name">Theater</span></a>
+    <p class="now">Now showing <b>Emberwing</b> · demo reel</p>
+    <div class="tools">
+      <a class="ghost home-btn" href="/" title="Back to main website">← Home</a>
+      <button class="ghost" id="snd" type="button" aria-pressed="true">Sound on</button>
+      <button class="ghost" id="fs" type="button">Fullscreen</button>
+    </div>
+  </header>
+
+  <section class="hall" id="hall" aria-label="7D theater demo">
+    <div class="stage" id="stage">
+      <canvas id="gl" aria-label="Film scene with a dragon"></canvas>
+      <svg class="seats" id="seats" viewBox="0 0 1000 110" aria-hidden="true">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151119"/><stop offset="1" stop-color="#050407"/></linearGradient></defs>
+        <g fill="url(#sg)" stroke="rgba(255,190,120,.2)" stroke-width="1.5">
+          <rect x="70" y="40" width="200" height="90" rx="44"/><rect x="120" y="12" width="100" height="44" rx="22"/>
+          <rect x="290" y="40" width="200" height="90" rx="44"/><rect x="340" y="12" width="100" height="44" rx="22"/>
+          <rect x="510" y="40" width="200" height="90" rx="44"/><rect x="560" y="12" width="100" height="44" rx="22"/>
+          <rect x="730" y="40" width="200" height="90" rx="44"/><rect x="780" y="12" width="100" height="44" rx="22"/>
+        </g>
+        <g fill="#030204" stroke="rgba(255,190,120,.18)" stroke-width="1.5">
+          <circle cx="390" cy="46" r="26"/><ellipse cx="390" cy="112" rx="58" ry="40"/>
+          <circle cx="830" cy="50" r="24"/><ellipse cx="830" cy="114" rx="54" ry="38"/>
+        </g>
+      </svg>
+      <canvas id="fx"></canvas>
+      <div class="vig"></div>
+      <div class="curtain l"></div><div class="curtain r"></div>
+      <div class="ticket" id="ticket" role="dialog" aria-label="Start the demo">
+        <div class="stub"><span>Admit one</span></div>
+        <div class="main">
+          <p class="eyebrow">Now showing</p>
+          <h1>Emberwing</h1>
+          <p class="sub">A dragon leaves the screen. Eight effects follow it into the room.</p>
+          <dl class="meta"><div><dt>Seat</dt><dd id="tkSeat">B4</dd></div><div><dt>Effects</dt><dd>8</dd></div><div><dt>Seats</dt><dd>16</dd></div></dl>
+          <button class="go" id="go" type="button">Take your seat</button>
+          <p class="warn">Plays sound. Contains flashing light.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rail" id="rail" role="group" aria-label="Effects"></div>
+    <div class="bar">
+      <button class="show" id="show" type="button" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg><span id="showLbl">Play the show</span></button>
+      <button class="seatbtn" id="seatBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3l.8 10.5h8.7V21M8.8 13.5L7 21"/></svg><span id="seatBtnLbl">Seat B4</span></button>
+      <label class="rng" for="dens">Intensity <input id="dens" type="range" min="0" max="100" value="70"></label>
+      <p class="legend">Rain, snow, wind, fog, bubbles and fire stay on until you switch them off. Lightning and air blast fire once. Keys 1 to 8 work too.</p>
+    </div>
+  </section>
+
+  <section class="plan" aria-label="Cabin plan">
+    <button class="ghost sheet-close" id="sheetClose" type="button">Done</button>
+    <div class="card">
+      <h2>Cabin plan</h2>
+      <svg id="planSvg" viewBox="-1400 -620 9200 5600" role="group" aria-label="Seat map. Choose a seat to change your view."></svg>
+    </div>
+    <div class="card">
+      <h2>Your seat</h2>
+      <div class="pick"><b id="seatBig">B4</b><span id="seatInfo"></span></div>
+      <p class="foot" style="margin:0">Pick any seat on the plan. The view on the screen shifts to match where you sit.</p>
+      <dl class="specs">
+        <div><dt>Screen width</dt><dd>4.40 m</dd></div>
+        <div><dt>Seats</dt><dd>16, two rows of eight</dd></div>
+        <div><dt>Effects</dt><dd>8</dd></div>
+        <div><dt>Cabin length</dt><dd>7.21 m, driver cabin at the front</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <p class="foot end">This is a demo of the 7D experience. The effects are simulated on your screen. In the cabin, the same cues arrive as real water, air, heat and seat motion. <a href="/#reserve" style="color:var(--lamp);margin-left:6px;text-underline-offset:3px">Reserve a Seat →</a></p>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<!-- three.js r128, loaded from a CDN. To self-host, download it and change this src. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/js/theater.js"></script>
+<script>
+  if (!window.THREE && !document.querySelector('script[src*="theater.js"]')) {
+    const s = document.createElement('script');
+    s.src = 'js/theater.js';
+    document.body.appendChild(s);
+  }
+</script>
+</body>
+</html>

@@ -15,10 +15,17 @@ export function truckGeom(L) {
   const B = { x: -235, y: -90 };
   const A2 = lerp2(A, vpl, K_BOX);
   const B2 = lerp2(B, vpl, K_BOX);
+
+  const AR = { x: 235, y: -540 };
+  const AR2 = lerp2(AR, vpl, K_BOX);
+
   const E = { x: -190, y: -330 };
   const F = { x: -190, y: -50 };
   const E2 = lerp2(E, vpl, K_CAB);
   const F2 = lerp2(F, vpl, K_CAB);
+
+  const ER = { x: 190, y: -330 };
+  const ER2 = lerp2(ER, vpl, K_CAB);
 
   const onSide = (u, v) => lerp2(lerp2(A, A2, u), lerp2(B, B2, u), v);
   const quad = (u0, u1, v0, v1) => [onSide(u0, v0), onSide(u1, v0), onSide(u1, v1), onSide(u0, v1)];
@@ -27,10 +34,15 @@ export function truckGeom(L) {
   const trim = quad(0.0, 1.0, 0.86, 0.9);
   const seams = [0.38, 0.62].map((u) => [onSide(u, 0.02), onSide(u, 0.98)]);
 
+  const hasRoof = vpl.y < A.y;
+
   return {
     vpl,
+    hasRoof,
     boxSide: [A, A2, B2, B],
+    boxRoof: [A, A2, AR2, AR],
     cabSide: [E, E2, F2, F],
+    cabRoof: [E, E2, ER2, ER],
     screen, trim, seams,
     screenCentre: {
       x: (screen[0].x + screen[2].x) / 2,

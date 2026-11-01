@@ -127,6 +127,11 @@ function Scene({ L, reg, showTruck = true }) {
           <stop offset="0" stopColor="#2b1f2b" />
           <stop offset="1" stopColor="#120c18" />
         </linearGradient>
+        <linearGradient id="roofShade" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#1e1522" />
+          <stop offset="0.65" stopColor="#2b1c30" />
+          <stop offset="1" stopColor="#3c2440" />
+        </linearGradient>
         <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#d98a4c" stopOpacity="0.55" />
           <stop offset="0.6" stopColor="#2d1a3c" stopOpacity="0.9" />
@@ -189,8 +194,10 @@ function Scene({ L, reg, showTruck = true }) {
               {/* silhouette base: always present */}
               <g fill="#07050f">
                 <polygon points={pts(G.boxSide)} />
+                {G.hasRoof && <polygon points={pts(G.boxRoof)} />}
                 <rect x="-235" y="-540" width="470" height="450" />
                 <polygon points={pts(G.cabSide)} />
+                {G.hasRoof && <polygon points={pts(G.cabRoof)} />}
                 <rect x="-190" y="-330" width="380" height="280" rx="30" />
                 <rect x="-205" y="-62" width="410" height="34" rx="8" />
                 <rect x="-172" y="-78" width="64" height="78" rx="6" />
@@ -200,6 +207,7 @@ function Scene({ L, reg, showTruck = true }) {
               {/* revealed detail */}
               <g ref={(el) => (reg.detail = el)} style={{ opacity: 0 }}>
                 <polygon points={pts(G.boxSide)} fill="url(#bodyShade)" />
+                {G.hasRoof && <polygon points={pts(G.boxRoof)} fill="url(#roofShade)" />}
                 <polygon points={pts(G.trim)} fill="#c9974a" opacity="0.8" />
                 {G.seams.map((s, i) => (
                   <line key={i} x1={s[0].x} y1={s[0].y} x2={s[1].x} y2={s[1].y} stroke="#07050f" strokeWidth="2.5" opacity="0.7" />
@@ -207,6 +215,7 @@ function Scene({ L, reg, showTruck = true }) {
                 <rect x="-235" y="-540" width="470" height="450" fill="#1a121d" />
                 <rect x="-235" y="-540" width="470" height="6" fill="#c9974a" opacity="0.5" />
                 <polygon points={pts(G.cabSide)} fill="#1d1522" />
+                {G.hasRoof && <polygon points={pts(G.cabRoof)} fill="#201725" />}
                 <rect x="-190" y="-330" width="380" height="280" rx="30" fill="#241a28" />
                 <path d="M-165 -300 H165 L150 -190 H-150Z" fill="url(#glass)" />
                 <rect x="-110" y="-165" width="220" height="82" rx="8" fill="#0b0810" />
@@ -218,6 +227,12 @@ function Scene({ L, reg, showTruck = true }) {
                 <rect x="108" y="-78" width="64" height="78" rx="6" fill="#050309" />
                 {/* rim light from the amber horizon on the roofline */}
                 <path d="M-235 -540 H235" stroke="#ffb35c" strokeOpacity="0.55" strokeWidth="3" />
+                {G.hasRoof && (
+                  <>
+                    <line x1={G.boxRoof[0].x} y1={G.boxRoof[0].y} x2={G.boxRoof[1].x} y2={G.boxRoof[1].y} stroke="#ffc56e" strokeOpacity="0.65" strokeWidth="2.5" />
+                    <line x1={G.boxRoof[1].x} y1={G.boxRoof[1].y} x2={G.boxRoof[2].x} y2={G.boxRoof[2].y} stroke="#e0803f" strokeOpacity="0.45" strokeWidth="2" />
+                  </>
+                )}
                 {/* headlight lenses */}
                 <rect x="-168" y="-152" width="56" height="40" rx="14" fill="#fff0c2" />
                 <rect x="112" y="-152" width="56" height="40" rx="14" fill="#fff0c2" />

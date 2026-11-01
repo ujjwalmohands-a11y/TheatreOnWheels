@@ -8,7 +8,6 @@ import NavBar from './components/NavBar';
 import PlacesOfLaunch from './components/PlacesOfLaunch';
 import PrebookPass from './components/PrebookPass';
 import AboutPage from './components/AboutPage';
-import RecognitionBadges from './components/RecognitionBadges';
 import CustomCursor from './components/CustomCursor';
 
 
@@ -126,6 +125,14 @@ export default function App() {
         window.location.href = '/about.html';
         return;
       }
+      if (hash === '#achievements') {
+        window.location.href = '/achievements.html';
+        return;
+      }
+      if (hash === '#experience' || hash === '#step-inside') {
+        window.location.href = '/step-inside.html';
+        return;
+      }
       setCurrentPage('home');
       const targetId = hash.replace('#', '');
       if (targetId && targetId !== 'hero') {
@@ -142,6 +149,12 @@ export default function App() {
   const handleNavigate = useCallback((page, sectionId) => {
     if (page === 'about') {
       window.location.href = '/about.html';
+      return;
+    } else if (page === 'achievements') {
+      window.location.href = '/achievements.html';
+      return;
+    } else if (page === 'experience' || page === 'step-inside') {
+      window.location.href = '/step-inside.html';
       return;
     } else {
       setCurrentPage('home');
@@ -231,9 +244,6 @@ export default function App() {
         </>
       )}
 
-      {/* Recognition Badges */}
-      <RecognitionBadges />
-
       {/* Footer */}
       <footer id="contact" className="footer">
         <div className="container">
@@ -291,6 +301,28 @@ export default function App() {
                     About The Theatre
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/step-inside.html"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('experience');
+                    }}
+                  >
+                    7D Experience
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/achievements.html"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigate('achievements');
+                    }}
+                  >
+                    Achievements & Medals
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
@@ -303,11 +335,12 @@ export default function App() {
               </ul>
             </div>
             <div>
-              <div className="footer-col-title">Trust</div>
+              <div className="footer-col-title">Trust & Accreditations</div>
               <ul className="footer-links">
-                <li><a href="#">IIT Bhubaneswar</a></li>
-                <li><a href="#">Startup India</a></li>
-                <li><a href="#">Startup Odisha</a></li>
+                <li><a href="/achievements.html">IIT Bhubaneswar Cohort</a></li>
+                <li><a href="/achievements.html">Startup Odisha Incubation</a></li>
+                <li><a href="/achievements.html">Startup India DPIIT</a></li>
+                <li><a href="/achievements.html">All Medals & Batches →</a></li>
               </ul>
             </div>
           </div>
