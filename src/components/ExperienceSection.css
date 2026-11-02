@@ -1,0 +1,39 @@
+/* ================================================================
+   Experience Section — 3rd Section on Homepage (after Route Map)
+   ================================================================ */
+
+.experience-embed-section {
+  position: relative;
+  background: var(--c-ink, #08070a);
+  padding: clamp(24px, 4vw, 56px) 0;
+  border-top: 1px solid rgba(201, 151, 74, 0.16);
+  border-bottom: 1px solid rgba(201, 151, 74, 0.16);
+  overflow: hidden;
+}
+
+.experience-embed-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(8px, 2vw, 24px);
+}
+
+.experience-embed-iframe {
+  width: 100%;
+  border: 1px solid rgba(243, 230, 200, 0.12);
+  border-radius: 16px;
+  background: #08070a;
+  display: block;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 40px rgba(201, 151, 74, 0.05);
+  transition: height 0.2s ease;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .experience-embed-section {
+    padding: 16px 0 24px;
+  }
+  .experience-embed-iframe {
+    border-radius: 10px;
+  }
+}

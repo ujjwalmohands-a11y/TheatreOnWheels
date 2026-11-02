@@ -40,7 +40,11 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-h, 72px);
+}
+
 body {
   background-color: var(--c-ink);
   color: var(--c-cream);
@@ -829,3 +833,17 @@ p { color: var(--c-muted); font-size: var(--text-body); line-height: 1.75; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
 }
+
+/* ── Hero & Experience Merged Section ──────────────────────── */
+.hero-experience-merged {
+  position: relative;
+  background: #06040f;
+  overflow: visible;
+}
+
+.hero-experience-anchor {
+  position: relative;
+  background: #06040f;
+  margin-top: -1px;
+}
+

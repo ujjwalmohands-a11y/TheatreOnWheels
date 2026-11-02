@@ -3,20 +3,21 @@ import './NavBar.css';
 
 const DESKTOP_NAV_ITEMS = [
   { id: 'shows',        label: 'Home',         href: '#hero' },
-  { id: 'experience',   label: 'Experience',   href: '/step-inside.html' },
+  { id: 'route',        label: 'Route',        href: '#route' },
+  { id: 'experience',   label: '7D Experience', href: '#experience' },
+  { id: 'reserve',      label: 'Reserve Ticket', href: '#reserve' },
   { id: 'about',        label: 'About',        href: '/about.html' },
   { id: 'achievements', label: 'Achievements', href: '/achievements.html' },
-  { id: 'route',        label: 'Route',        href: '#places-of-launch' },
   { id: 'contact',      label: 'Contact',      href: '#contact' },
 ];
 
 const MOBILE_NAV_ITEMS = [
   { id: 'shows',        label: 'Home',               subtitle: 'Main Stage',                href: '#hero',              icon: 'home' },
-  { id: 'experience',   label: 'Experience',         subtitle: 'Step Inside 7D',            href: '/step-inside.html',  icon: 'spark' },
+  { id: 'route',        label: 'Route',              subtitle: '30 Launch Stops in India',  href: '#route',             icon: 'compass' },
+  { id: 'experience',   label: '7D Experience',      subtitle: 'Experience it right here', href: '#experience',        icon: 'spark' },
+  { id: 'reserve',      label: 'Reserve a Ticket',   subtitle: 'Live Ticket · Claim Place', href: '#reserve',           icon: 'ticket' },
   { id: 'about',        label: 'About',              subtitle: 'Our Story & Genesis',       href: '/about.html',        icon: 'book' },
   { id: 'achievements', label: 'Achievements',       subtitle: 'Medals & Incubation Batches', href: '/achievements.html', icon: 'medal' },
-  { id: 'route',        label: 'Route',              subtitle: 'Tour Dates & Stops',        href: '#places-of-launch',  icon: 'compass' },
-  { id: 'reserve',      label: 'Reserve the ticket', subtitle: 'Admit One · Grab Seats',    href: '#reserve',           icon: 'ticket' },
 ];
 
 const ICONS = {
@@ -168,10 +169,10 @@ export default function NavBar({ currentPage = 'home', onNavigate, lang: propLan
         document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
       }
     } else if (pageId === 'experience') {
-      if (onNavigate) {
-        onNavigate('experience');
+      if (currentPage !== 'home' && onNavigate) {
+        onNavigate('home', 'experience');
       } else {
-        window.location.href = '/step-inside.html';
+        document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
       }
     } else if (pageId === 'about' || pageId === 'truck') {
       if (onNavigate) {

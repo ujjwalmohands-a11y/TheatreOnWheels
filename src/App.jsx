@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import './index.css';
 import './pass.css';
 import Hero from './hero/Hero';
@@ -9,6 +9,8 @@ import PlacesOfLaunch from './components/PlacesOfLaunch';
 import PrebookPass from './components/PrebookPass';
 import AboutPage from './components/AboutPage';
 import CustomCursor from './components/CustomCursor';
+import ExperienceSection from './components/ExperienceSection';
+import Footer from './components/Footer';
 
 
 /* ── Intersection-observer reveal ─────────────────────────────── */
@@ -73,50 +75,15 @@ const WORLDS = [
   },
 ];
 
-/* ── Sidebar navigation dots ─────────────────────────────────── */
-const SECTIONS = [
-  { id: 'hero', label: 'Arrival' },
-  { id: 'places-of-launch', label: 'Places of Launch' },
-  { id: 'reserve', label: 'Reserve Pass' },
-];
-
-function SideNav() {
-  const [active, setActive] = useState('hero');
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
-      },
-      { threshold: 0.4 }
-    );
-    SECTIONS.forEach(s => {
-      const el = document.getElementById(s.id);
-      if (el) obs.observe(el);
-    });
-    return () => obs.disconnect();
-  }, []);
-  return (
-    <nav className="side-nav" aria-label="Section navigation">
-      {SECTIONS.map(s => (
-        <button
-          key={s.id}
-          className={`side-nav__dot${active === s.id ? ' is-active' : ''}`}
-          data-label={s.label}
-          aria-label={`Go to ${s.label}`}
-          onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' })}
-        />
-      ))}
-    </nav>
-  );
-}
 
 /* ── App ──────────────────────────────────────────────────────── */
 export default function App() {
   const [prebook, setPrebook] = useState(null);
   const [selectedWorld, setSelectedWorld] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedSeat, setSelectedSeat] = useState('B4');
   const [currentPage, setCurrentPage] = useState('home');
   const [lang, setLang] = useState('en');
+
 
   useEffect(() => {
     const handleHash = () => {
@@ -129,7 +96,14 @@ export default function App() {
         window.location.href = '/achievements.html';
         return;
       }
-      if (hash === '#experience' || hash === '#step-inside') {
+      if (hash === '#experience') {
+        setCurrentPage('home');
+        setTimeout(() => {
+          document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+        return;
+      }
+      if (hash === '#step-inside') {
         window.location.href = '/step-inside.html';
         return;
       }
@@ -153,7 +127,14 @@ export default function App() {
     } else if (page === 'achievements') {
       window.location.href = '/achievements.html';
       return;
-    } else if (page === 'experience' || page === 'step-inside') {
+    } else if (page === 'experience') {
+      setCurrentPage('home');
+      window.location.hash = 'experience';
+      setTimeout(() => {
+        document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
+      }, 60);
+      return;
+    } else if (page === 'step-inside') {
       window.location.href = '/step-inside.html';
       return;
     } else {
@@ -170,10 +151,6 @@ export default function App() {
     }
   }, []);
 
-  const handleSelectCityForPass = useCallback((cityName) => {
-    setSelectedCity(cityName);
-  }, []);
-
   const handleConfirmed = (details) => {
     try {
       const all = JSON.parse(localStorage.getItem('tow_prebookings') || '[]');
@@ -187,9 +164,6 @@ export default function App() {
       {/* Custom cursor trail (canvas) — .cur files applied via CSS */}
       <CustomCursor />
 
-      {/* Sidebar nav dots (home only) */}
-      {currentPage === 'home' && <SideNav />}
-
       <NavBar currentPage={currentPage} onNavigate={handleNavigate} lang={lang} onLangChange={setLang} />
 
       {currentPage === 'about' ? (
@@ -199,35 +173,43 @@ export default function App() {
         />
       ) : (
         <>
-          {/* 1. Hero / Shows */}
+          {/* 1. The landing page hero section */}
           <div id="hero">
             <span id="shows" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
             <Hero lang={lang} onLangChange={setLang} />
           </div>
 
           <main>
-            {/* 2. Places of Launch Section — Route Map & Demand Ballot */}
+            {/* 2. The route or the India map section */}
             <div id="route">
+              <span id="places-of-launch" style={{ position: 'absolute', top: 0 }} aria-hidden="true" />
               <Reveal>
-                <PlacesOfLaunch onSelectCityForPass={handleSelectCityForPass} />
+                <PlacesOfLaunch />
               </Reveal>
             </div>
 
-            {/* 3. Reserve — form ON the ticket */}
+            {/* 3. The experience section */}
+            <div id="experience">
+              <Reveal>
+                <ExperienceSection />
+              </Reveal>
+            </div>
+
+            {/* 4. Reserve — Reserve a Ticket */}
             <section id="reserve" className="section ticket-section">
               <div className="container">
                 <Reveal>
-                  <span className="eyebrow">Early Access</span>
-                  <h2 style={{ marginBottom: '12px' }}>Reserve your journey pass.</h2>
-                  <p style={{ maxWidth: '44ch', marginBottom: '48px' }}>
+                  <span className="eyebrow">Early Access Pass</span>
+                  <h2 style={{ marginBottom: '12px' }}>Reserve a Ticket.</h2>
+                  <p style={{ maxWidth: '48ch', marginBottom: '48px' }}>
                     No payment now. Fill in the fields below — your name appears on the ticket live as you type.
-                    Tear the stub to confirm.
+                    {selectedSeat ? ` Seat ${selectedSeat} pre-allocated.` : ''} Tear the stub to confirm your place.
                   </p>
                 </Reveal>
 
                 <Reveal delay={1}>
                   <PrebookPass
-                    initialCity={selectedCity}
+                    initialCity=""
                     selectedWorld={WORLDS.find((w) => w.id === selectedWorld)?.title || ''}
                     worlds={WORLDS}
                     onWorldChange={(worldTitle) => {
@@ -244,120 +226,9 @@ export default function App() {
         </>
       )}
 
-      {/* Footer */}
-      <footer id="contact" className="footer">
-        <div className="container">
-          <div className="footer-grid">
-            <div>
-              <div className="footer-brand">TheatreOnWheels</div>
-              <p style={{ marginTop: '16px', fontSize: '13px', lineHeight: '1.7' }}>
-                A travelling immersive theatre. One truck, many worlds.
-              </p>
-            </div>
-            <div>
-              <div className="footer-col-title">Navigation</div>
-              <ul className="footer-links">
-                <li>
-                  <a
-                    href="#hero"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('home', 'hero');
-                    }}
-                  >
-                    Arrival
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#places-of-launch"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('home', 'places-of-launch');
-                    }}
-                  >
-                    Places of Launch
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#reserve"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('home', 'reserve');
-                    }}
-                  >
-                    Reserve Pass
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/about.html"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('about');
-                    }}
-                  >
-                    About The Theatre
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/step-inside.html"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('experience');
-                    }}
-                  >
-                    7D Experience
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/achievements.html"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigate('achievements');
-                    }}
-                  >
-                    Achievements & Medals
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <div className="footer-col-title">Connect</div>
-              <ul className="footer-links">
-                <li><a href="#">Instagram</a></li>
-                <li><a href="#">WhatsApp</a></li>
-                <li><a href="#">YouTube</a></li>
-                <li><a href="#">Host Us</a></li>
-              </ul>
-            </div>
-            <div>
-              <div className="footer-col-title">Trust & Accreditations</div>
-              <ul className="footer-links">
-                <li><a href="/achievements.html">IIT Bhubaneswar Cohort</a></li>
-                <li><a href="/achievements.html">Startup Odisha Incubation</a></li>
-                <li><a href="/achievements.html">Startup India DPIIT</a></li>
-                <li><a href="/achievements.html">All Medals & Batches →</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <div className="footer-legal">
-              <span className="footer-trademark">
-                TheatreOnWheels is a trademark of Gaudya Darshan Solutions Private Limited.
-              </span>
-              <span className="footer-copy">© 2026 Gaudya Darshan. All rights reserved.</span>
-            </div>
-            <div className="footer-links" style={{ flexDirection: 'row', gap: '24px' }}>
-              <a href="#">Privacy</a>
-              <a href="#">Contact</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Theater on Wheels Footer */}
+      <Footer onNavigate={handleNavigate} />
+
 
       {/* Ticket confirmation modal */}
       <AnimatePresence>

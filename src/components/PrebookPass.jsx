@@ -85,7 +85,7 @@ export default function PrebookPass({
 }) {
   const [formData, setFormData] = useState({
     name: '',
-    city: initialCity || '',
+    city: '',
     destination: selectedWorld || '',
     whatsapp: '',
     email: '',
@@ -98,13 +98,6 @@ export default function PrebookPass({
 
   const destDropdownRef = useRef(null);
   const tearBadgeRef = useRef(null);
-
-  // Sync city when selection changes externally (e.g. from PlacesOfLaunch map)
-  useEffect(() => {
-    if (initialCity) {
-      setFormData((prev) => ({ ...prev, city: initialCity }));
-    }
-  }, [initialCity]);
 
   // Sync destination if selectedWorld prop changes
   useEffect(() => {
@@ -292,7 +285,7 @@ export default function PrebookPass({
                       id="po-city"
                       type="text"
                       autoComplete="address-level2"
-                      placeholder="Where are you located?"
+                      placeholder="e.g. Prayagraj, Puri, Mumbai"
                       value={formData.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
                     />

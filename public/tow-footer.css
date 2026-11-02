@@ -1,0 +1,98 @@
+/* Theater on Wheels footer. All classes are prefixed tf-, so it won't clash with your site. */
+.tow-footer{
+  --tf-bg:#0b0a0a; --tf-ink:#f4efe9; --tf-mute:#8d8782; --tf-line:rgba(255,255,255,.1);
+  --tf-ember:#ff5a2c; --tf-amber:#ff9a4d; --tf-blood:#c4231b;
+  --tf-display:"Anton","Impact","Arial Narrow",sans-serif;
+  --tf-body:"Inter Tight",system-ui,-apple-system,"Segoe UI",sans-serif;
+  position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;
+  padding:0 1.25rem calc(.9rem + env(safe-area-inset-bottom,0px));
+  background:radial-gradient(110% 60% at 50% 0%,#1a110e,var(--tf-bg) 70%);
+  color:var(--tf-ink);font-family:var(--tf-body);-webkit-font-smoothing:antialiased;
+}
+.tow-footer *,.tow-footer *::before,.tow-footer *::after{box-sizing:border-box}
+.tow-footer a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.tow-footer a:focus-visible{outline:2px solid var(--tf-amber);outline-offset:3px;border-radius:8px}
+.tf-wrap{max-width:520px;margin:0 auto}
+
+/* moving light */
+.tf-fx{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.tf-beam{position:absolute;top:-8%;left:50%;width:150%;height:130%;margin-left:-75%;transform-origin:50% 0;filter:blur(14px);will-change:transform;
+  background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,rgba(255,140,70,0) 168deg,rgba(255,120,60,.22) 180deg,rgba(255,140,70,0) 192deg,transparent 200deg);
+  animation:tf-sweep 9s ease-in-out infinite alternate}
+@keyframes tf-sweep{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+.tf-glow{position:absolute;width:70vw;max-width:360px;aspect-ratio:1;border-radius:50%;right:-20%;bottom:-10%;filter:blur(60px);
+  background:radial-gradient(circle,rgba(255,90,44,.35),transparent 70%);animation:tf-breathe 7s ease-in-out infinite alternate}
+@keyframes tf-breathe{to{transform:scale(1.25) translate3d(-8%,-6%,0);opacity:.6}}
+.tf-fx i{position:absolute;bottom:-8px;width:3px;height:3px;border-radius:50%;background:var(--tf-amber);opacity:0;filter:blur(.5px);animation:tf-rise linear infinite}
+@keyframes tf-rise{0%{transform:translate3d(0,0,0);opacity:0}20%{opacity:.8}100%{transform:translate3d(var(--dx),-280px,0);opacity:0}}
+
+/* film strip */
+.tf-strip{position:relative;height:3.1rem;margin:0 -1.25rem;overflow:hidden;background:#15100e;border-bottom:1px solid var(--tf-line);display:flex;align-items:center}
+.tf-strip::before,.tf-strip::after{content:"";position:absolute;left:0;height:7px;width:calc(100% + 18px);
+  background:repeating-linear-gradient(90deg,var(--tf-bg) 0 9px,transparent 9px 18px);animation:tf-holes 1.4s linear infinite}
+.tf-strip::before{top:4px}.tf-strip::after{bottom:4px}
+@keyframes tf-holes{to{transform:translate3d(-18px,0,0)}}
+.tf-track{display:flex;width:max-content;animation:tf-scroll 22s linear infinite}
+.tf-grp{display:flex;align-items:center;gap:.9rem;padding-right:.9rem;flex-shrink:0}
+.tf-grp span{font-family:var(--tf-display);font-size:1.45rem;line-height:1;text-transform:uppercase;white-space:nowrap;letter-spacing:.02em}
+.tf-grp span:nth-child(even){color:transparent;-webkit-text-stroke:1px rgba(244,239,233,.6)}
+.tf-grp b{color:var(--tf-ember);font-size:.7rem;font-weight:400}
+@keyframes tf-scroll{to{transform:translate3d(-50%,0,0)}}
+
+/* brand + reel */
+.tf-brand{margin:1.4rem 0 0;font-family:var(--tf-display);font-weight:400;text-transform:uppercase;line-height:.95;
+  font-size:clamp(2.6rem,14.5vw,4.4rem);display:flex;align-items:center;gap:.6rem}
+.tf-t{overflow:hidden;display:block}
+.tf-t>span{display:block;transform:translateY(105%);transition:transform 1s cubic-bezier(.2,.8,.2,1) var(--d,0s);
+  background:linear-gradient(100deg,var(--tf-ink) 0 30%,var(--tf-amber) 48%,var(--tf-ember) 60%,var(--tf-ink) 78%);background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tf-sheen 6s ease-in-out infinite alternate}
+@keyframes tf-sheen{from{background-position:100% 0}to{background-position:0 0}}
+.tow-footer.tf-in .tf-t>span{transform:none}
+
+.tf-reel{flex:none;margin-left:auto;width:clamp(3.4rem,17vw,4.8rem);aspect-ratio:1;overflow:visible;
+  filter:drop-shadow(0 0 8px rgba(255,90,44,.45));cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tf-reel .tf-disc,.tf-reel .tf-ticks,.tf-reel .tf-hub{transform-box:fill-box;transform-origin:center}
+.tf-reel .tf-disc{animation:tf-spin 9s linear infinite}
+.tf-reel .tf-ticks{animation:tf-spin 24s linear infinite reverse}
+.tf-reel .tf-hub{animation:tf-spin 9s linear infinite reverse}   /* hub holds still against the disc's spin for a "gate" feel */
+.tf-reel:hover .tf-disc,.tf-reel:active .tf-disc{animation-duration:1.6s}
+.tf-reel:hover .tf-hub,.tf-reel:active .tf-hub{animation-duration:1.6s}
+@keyframes tf-spin{to{transform:rotate(360deg)}}
+
+.tf-lead{margin:.7rem 0 0;color:var(--tf-mute);font-size:.95rem;line-height:1.45;max-width:34ch}
+.tf-lead strong{color:var(--tf-ink);font-weight:500}
+
+/* actions */
+.tf-actions{display:flex;gap:.5rem;margin-top:1.1rem}
+.tf-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;height:2.9rem;border-radius:999px;font-weight:500;overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,background .3s,border-color .3s}
+.tf-btn:active{transform:scale(.94)}
+.tf-book{flex:1;gap:.5rem;padding:0 1rem;font-size:.93rem;white-space:nowrap;color:#fff;background:linear-gradient(120deg,var(--tf-ember),var(--tf-blood))}
+.tf-book::before{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:tf-shine 3.8s ease-in-out infinite}
+@keyframes tf-shine{0%,55%{left:-60%}100%{left:130%}}
+.tf-book svg{width:1.05em;height:1.05em;animation:tf-nudge 1.8s ease-in-out infinite}
+@keyframes tf-nudge{50%{transform:translateX(4px)}}
+.tf-soc{width:2.9rem;color:var(--tf-ink);border:1px solid var(--tf-line);background:rgba(255,255,255,.04)}
+.tf-soc svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.tf-soc:hover,.tf-soc:focus-visible{border-color:var(--tf-ember);background:rgba(255,90,44,.14);box-shadow:0 0 22px -4px rgba(255,90,44,.6)}
+.tf-soc:hover svg{transform:scale(1.12) rotate(-6deg)}
+
+/* nav + bottom */
+.tf-nav{margin-top:1rem;border-top:1px solid var(--tf-line);padding-top:.7rem}
+.tf-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 1.1rem}
+.tf-nav a{position:relative;display:inline-block;padding:.55rem 0;font-size:.95rem}
+.tf-nav a::after{content:"";position:absolute;left:0;right:0;bottom:.35rem;height:1px;background:var(--tf-ember);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.tf-nav a:hover::after,.tf-nav a:focus-visible::after,.tf-nav a:active::after{transform:scaleX(1)}
+.tf-bar{margin-top:.5rem;padding-top:.7rem;border-top:1px solid var(--tf-line);display:flex;flex-wrap:wrap;gap:.35rem 1rem;justify-content:space-between;align-items:center;color:var(--tf-mute);font-size:.75rem}
+.tf-bar a:hover{color:var(--tf-ink)}
+.tf-live{display:inline-flex;align-items:center;gap:.5rem;letter-spacing:.1em;font-size:.68rem;width:100%;justify-content:center;margin-top:.3rem}
+.tf-dot{position:relative;width:6px;height:6px;border-radius:50%;background:var(--tf-ember);box-shadow:0 0 8px var(--tf-ember)}
+.tf-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--tf-ember);animation:tf-ping 2.2s ease-out infinite}
+@keyframes tf-ping{to{transform:scale(4);opacity:0}}
+
+@media (min-width:700px){.tf-wrap{max-width:560px}}
+@media (prefers-reduced-motion:reduce){
+  .tow-footer *,.tow-footer *::before,.tow-footer *::after{animation:none!important;transition-duration:.01ms!important}
+  .tf-t>span{transform:none}.tf-fx i{display:none}
+}
