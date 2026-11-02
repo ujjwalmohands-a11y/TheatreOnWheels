@@ -110,8 +110,9 @@ const Snd=(()=>{
 function initGL(){
   const T=window.THREE; if(!T) throw new Error('three missing');
   const canvas=$('#gl');
-  const renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,innerWidth<700?1.5:2));
+  const isMobile=(innerWidth<700);
+  const renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',precision:'highp'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,isMobile?1.5:2));
   renderer.setClearColor(0x050407);
   const scene=new T.Scene(); scene.fog=new T.Fog(0x2b1744,30,150);
   const cam=new T.PerspectiveCamera(44,1.6,.1,400);
@@ -121,16 +122,48 @@ function initGL(){
   const fill=new T.DirectionalLight(0x9fb8ff,.95); fill.position.set(3,4,14); scene.add(fill);
   const fireL=new T.PointLight(0xff7a2a,0,24); scene.add(fireL);
 
-  function ctex(w,h,fn){ const c=document.createElement('canvas'); c.width=w; c.height=h; fn(c.getContext('2d'),w,h); return new T.CanvasTexture(c); }
-  const dot=ctex(64,64,(g,w,h)=>{ const r=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2); r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.35,'rgba(255,255,255,.55)'); r.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=r; g.fillRect(0,0,w,h); });
+  function ctex(w,h,fn){
+    const c=document.createElement('canvas'); c.width=w; c.height=h; fn(c.getContext('2d'),w,h);
+    const tex=new T.CanvasTexture(c); tex.generateMipmaps=false; tex.minFilter=T.LinearFilter; tex.magFilter=T.LinearFilter; tex.needsUpdate=true; return tex;
+  }
+  const dot=ctex(64,64,(g,w,h)=>{
+    const r=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+    r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.35,'rgba(255,255,255,.55)'); r.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=r; g.fillRect(0,0,w,h);
+  });
 
-  /* sky */
-  const skyTex=ctex(8,512,(g,w,h)=>{ const gr=g.createLinearGradient(0,0,0,h);
-    [[0,'#0a0720'],[.3,'#1e1050'],[.5,'#5a2470'],[.68,'#c0505a'],[.8,'#ff9d5c'],[.92,'#ffd08a'],[1,'#ffe9bf']].forEach(s=>gr.addColorStop(s[0],s[1])); g.fillStyle=gr; g.fillRect(0,0,w,h); });
+  // Safe procedural circle particle material for Points (immune to mobile WebGL pointCoord texture derivative bugs)
+  function circlePointsMat(params){
+    const mat=new T.PointsMaterial(params);
+    mat.onBeforeCompile=(shader)=>{
+      shader.fragmentShader=shader.fragmentShader.replace(
+        '#include <map_particle_fragment>',
+        `
+        vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+        float r2 = dot(cxy, cxy);
+        if (r2 > 1.0) discard;
+        float a = clamp(1.0 - sqrt(r2), 0.0, 1.0);
+        diffuseColor.a *= a * a;
+        `
+      );
+    };
+    return mat;
+  }
+
+  /* sky: 256x512 with LinearFilter avoids horizontal stepping and banding */
+  const skyTex=ctex(256,512,(g,w,h)=>{
+    const gr=g.createLinearGradient(0,0,0,h);
+    [[0,'#0a0720'],[.3,'#1e1050'],[.5,'#5a2470'],[.68,'#c0505a'],[.8,'#ff9d5c'],[.92,'#ffd08a'],[1,'#ffe9bf']].forEach(s=>gr.addColorStop(s[0],s[1]));
+    g.fillStyle=gr; g.fillRect(0,0,w,h);
+  });
   const sky=new T.Mesh(new T.PlaneGeometry(320,70),new T.MeshBasicMaterial({map:skyTex,fog:false})); sky.position.set(0,0,-85); scene.add(sky);
-  const sp=new Float32Array(300*3); for(let i=0;i<300;i++){ sp[i*3]=(R()-.5)*220; sp[i*3+1]=4+R()*30; sp[i*3+2]=-84; }
+
+  /* stars */
+  const starCount=isMobile?90:240;
+  const sp=new Float32Array(starCount*3); for(let i=0;i<starCount;i++){ sp[i*3]=(R()-.5)*220; sp[i*3+1]=4+R()*30; sp[i*3+2]=-84; }
   const sg=new T.BufferGeometry(); sg.setAttribute('position',new T.BufferAttribute(sp,3));
-  scene.add(new T.Points(sg,new T.PointsMaterial({size:.5,map:dot,color:0xffffff,fog:false,transparent:true,opacity:.85,depthWrite:false})));
+  scene.add(new T.Points(sg,circlePointsMat({size:.55,color:0xffffff,fog:false,transparent:true,opacity:.8,depthWrite:false})));
+
   const moon=new T.Mesh(new T.SphereGeometry(7,32,24),new T.MeshBasicMaterial({color:0xfff0d6,fog:false})); moon.position.set(-24,9,-78); scene.add(moon);
   const mg=new T.Sprite(new T.SpriteMaterial({map:dot,color:0xffe2b0,opacity:.5,blending:T.AdditiveBlending,depthWrite:false,fog:false})); mg.scale.set(44,44,1); mg.position.copy(moon.position); mg.position.z+=1; scene.add(mg);
 
@@ -144,15 +177,18 @@ function initGL(){
     const bot=new T.Mesh(new T.ConeGeometry(r*.85,r*1.5,7,1),rockM); bot.rotation.x=Math.PI; bot.position.y=-r*.75;
     g.add(top,bot); g.position.set(d[0],d[1],d[2]); g.rotation.y=R()*6; scene.add(g); islands.push({g,y:d[1],ph:i*1.7});
   });
-  /* clouds */
-  const clouds=[]; for(let i=0;i<14;i++){
-    const s=new T.Sprite(new T.SpriteMaterial({map:dot,color:i%2?0x9a5aa8:0xd0708a,opacity:.2,depthWrite:false,fog:false}));
+
+  /* clouds: harmonious dusk amber/crimson mist (prevents blotchy rainbow clusters on mobile) */
+  const cloudCount=isMobile?6:14;
+  const clouds=[]; for(let i=0;i<cloudCount;i++){
+    const s=new T.Sprite(new T.SpriteMaterial({map:dot,color:i%2?0x482458:0x8a3854,opacity:isMobile?.09:.16,depthWrite:false,fog:false}));
     const sz=30+R()*24; s.scale.set(sz*1.8,sz*.6,1); s.position.set((R()-.5)*120,-20+R()*28,-38-R()*38); scene.add(s); clouds.push(s);
   }
-  /* motes */
-  const MN=320, mp=new Float32Array(MN*3); for(let i=0;i<MN;i++){ mp[i*3]=(R()-.5)*90; mp[i*3+1]=(R()-.5)*44; mp[i*3+2]=-70+R()*75; }
+
+  /* motes: subtle dust sparkles, safe on mobile */
+  const MN=isMobile?48:200, mp=new Float32Array(MN*3); for(let i=0;i<MN;i++){ mp[i*3]=(R()-.5)*90; mp[i*3+1]=(R()-.5)*44; mp[i*3+2]=-70+R()*75; }
   const mgeo=new T.BufferGeometry(); mgeo.setAttribute('position',new T.BufferAttribute(mp,3));
-  scene.add(new T.Points(mgeo,new T.PointsMaterial({size:.22,map:dot,color:0xffc880,transparent:true,opacity:.8,blending:T.AdditiveBlending,depthWrite:false,fog:false})));
+  scene.add(new T.Points(mgeo,circlePointsMat({size:isMobile?.32:.24,color:0xffdb99,transparent:true,opacity:.7,blending:T.AdditiveBlending,depthWrite:false,fog:false})));
 
   /* screen frame: a dark wall with a window, so anything at z>0 pops out of it */
   function rect(w,h){ const s=new T.Shape(); s.moveTo(-w,-h); s.lineTo(w,-h); s.lineTo(w,h); s.lineTo(-w,h); s.lineTo(-w,-h); return s; }
@@ -212,7 +248,7 @@ function initGL(){
   const BN=260, bPos=new Float32Array(BN*3), bCol=new Float32Array(BN*3), bVel=new Float32Array(BN*3), bLife=new Float32Array(BN).fill(-1), bMax=new Float32Array(BN);
   for(let i=0;i<BN;i++) bPos[i*3+2]=-999;
   const bGeo=new T.BufferGeometry(); bGeo.setAttribute('position',new T.BufferAttribute(bPos,3)); bGeo.setAttribute('color',new T.BufferAttribute(bCol,3));
-  const breath=new T.Points(bGeo,new T.PointsMaterial({size:1.35,map:dot,vertexColors:true,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false})); breath.frustumCulled=false; scene.add(breath);
+  const breath=new T.Points(bGeo,circlePointsMat({size:1.35,vertexColors:true,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false})); breath.frustumCulled=false; scene.add(breath);
   let bAcc=0, bCur=0, prevZ=-26;
 
   let baseDist=11;

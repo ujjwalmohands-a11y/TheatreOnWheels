@@ -11,6 +11,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/css/theater.css">
 <link rel="stylesheet" href="css/theater.css">
+<style>
+  html, body {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  ::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -94,6 +106,55 @@
     const s = document.createElement('script');
     s.src = 'js/theater.js';
     document.body.appendChild(s);
+  }
+
+  // Handle seamless iframe embedding inside home page
+  if (window.self !== window.top) {
+    document.body.classList.add('is-embedded');
+    const homeBtn = document.querySelector('.home-btn');
+    if (homeBtn) homeBtn.style.display = 'none';
+
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href*="#reserve"]');
+      if (a) {
+        e.preventDefault();
+        window.parent.postMessage({ type: 'TOW_NAVIGATE', target: 'reserve' }, '*');
+      }
+    });
+
+    const reportHeight = () => {
+      const isMobile = window.innerWidth <= 700;
+      let h;
+      if (isMobile) {
+        const hall = document.querySelector('.hall');
+        if (hall) {
+          const rect = hall.getBoundingClientRect();
+          h = Math.ceil(rect.bottom + 10);
+        } else {
+          const wrap = document.querySelector('.wrap');
+          h = wrap ? Math.ceil(wrap.getBoundingClientRect().height + 8) : 580;
+        }
+      } else {
+        const wrap = document.querySelector('.wrap');
+        h = wrap ? Math.ceil(wrap.getBoundingClientRect().height + 20) : 1500;
+      }
+      if (h > 200) {
+        window.parent.postMessage({ type: 'TOW_RESIZE', height: h }, '*');
+      }
+    };
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(reportHeight);
+      const wrap = document.querySelector('.wrap');
+      if (wrap) ro.observe(wrap);
+      if (document.body) ro.observe(document.body);
+    }
+    window.addEventListener('resize', reportHeight);
+    window.addEventListener('load', reportHeight);
+    reportHeight();
+    setTimeout(reportHeight, 100);
+    setTimeout(reportHeight, 300);
+    setTimeout(reportHeight, 800);
+    setTimeout(reportHeight, 2000);
   }
 </script>
 </body>
