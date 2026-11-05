@@ -32,7 +32,7 @@
   --text-sm:     14px;
   --col-gap:     clamp(16px, 3vw, 32px);
   --section-py:  clamp(80px, 10vw, 140px);
-  --nav-h:       72px;
+  --nav-h:       0px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-expo:  cubic-bezier(0.7, 0, 0.84, 0);
   --duration-md:   0.7s;
@@ -42,7 +42,7 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--nav-h, 72px);
+  scroll-padding-top: 24px;
 }
 
 body {
@@ -802,7 +802,7 @@ p { color: var(--c-muted); font-size: var(--text-body); line-height: 1.75; }
 
 @media (max-width: 900px) {
   :root {
-    --nav-h: 64px;
+    --nav-h: 0px;
     --section-py: clamp(48px, 8vw, 88px);
   }
   .side-nav {

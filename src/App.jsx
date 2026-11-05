@@ -4,7 +4,6 @@ import './index.css';
 import './pass.css';
 import Hero from './hero/Hero';
 import PrebookModal from './components/PrebookModal';
-import NavBar from './components/NavBar';
 import PlacesOfLaunch from './components/PlacesOfLaunch';
 import PrebookPass from './components/PrebookPass';
 import AboutPage from './components/AboutPage';
@@ -164,8 +163,6 @@ export default function App() {
       {/* Custom cursor trail (canvas) — .cur files applied via CSS */}
       <CustomCursor />
 
-      <NavBar currentPage={currentPage} onNavigate={handleNavigate} lang={lang} onLangChange={setLang} />
-
       {currentPage === 'about' ? (
         <AboutPage
           onNavigateHome={() => handleNavigate('home', 'hero')}
@@ -195,15 +192,15 @@ export default function App() {
               </Reveal>
             </div>
 
-            {/* 4. Reserve — Reserve a Ticket */}
+            {/* 4. Pre-book Your Seat Section */}
             <section id="reserve" className="section ticket-section">
               <div className="container">
                 <Reveal>
-                  <span className="eyebrow">Early Access Pass</span>
-                  <h2 style={{ marginBottom: '12px' }}>Reserve a Ticket.</h2>
-                  <p style={{ maxWidth: '48ch', marginBottom: '48px' }}>
-                    No payment now. Fill in the fields below — your name appears on the ticket live as you type.
-                    {selectedSeat ? ` Seat ${selectedSeat} pre-allocated.` : ''} Tear the stub to confirm your place.
+                  <span className="eyebrow">Priority Boarding · 2026 Tour</span>
+                  <h2 style={{ marginBottom: '12px' }}>Pre-book Your Seat.</h2>
+                  <p style={{ maxWidth: '52ch', marginBottom: '48px' }}>
+                    Zero payment required today. Enter your details to generate your official Boarding Pass live.
+                    {selectedSeat ? ` Seat ${selectedSeat} pre-allocated.` : ''} Tear the stub to lock in your seat before the tour rolls into your city.
                   </p>
                 </Reveal>
 
@@ -211,6 +208,7 @@ export default function App() {
                   <PrebookPass
                     initialCity=""
                     selectedWorld={WORLDS.find((w) => w.id === selectedWorld)?.title || ''}
+                    selectedSeat={selectedSeat}
                     worlds={WORLDS}
                     onWorldChange={(worldTitle) => {
                       const match = WORLDS.find((w) => w.title === worldTitle);

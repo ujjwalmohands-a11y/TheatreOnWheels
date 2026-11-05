@@ -6,7 +6,7 @@ export default function ExperienceSection() {
     if (typeof window !== 'undefined' && window.innerWidth <= 700) {
       return 590;
     }
-    return 1520;
+    return 720;
   };
 
   const [iframeHeight, setIframeHeight] = useState(getInitialHeight);
@@ -30,7 +30,7 @@ export default function ExperienceSection() {
           }
         } else {
           const wrap = doc.querySelector('.wrap');
-          trueH = wrap ? Math.ceil(wrap.getBoundingClientRect().height + 20) : 1500;
+          trueH = wrap ? Math.ceil(wrap.getBoundingClientRect().height + 20) : 720;
         }
         if (trueH > 250) {
           setIframeHeight(trueH);

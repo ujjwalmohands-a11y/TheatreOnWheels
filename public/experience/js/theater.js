@@ -95,6 +95,7 @@ const Snd=(()=>{
     else if(id==='air'){ shot('bandpass',300,2400,.6,.25,.4,1); shot('bandpass',2400,400,.4,.01,.5,1,.35); }
   }
   function whoosh(){ shot('bandpass',200,1200,.3,.5,.9,.9); }
+  function blip(){ if(ctx) tone('sine',1000,1000,.08,.005,.12); }
   function score(){
     if(!ctx||pad) return; pad=ctx.createGain(); pad.gain.value=.0001; pad.connect(master);
     const lp=filt('lowpass',800); lp.connect(pad);
@@ -103,7 +104,7 @@ const Snd=(()=>{
     pad.gain.setTargetAtTime(.06,ctx.currentTime,2);
   }
   function mute(m){ muted=m; if(ctx) master.gain.setTargetAtTime(m?.0001:.85,ctx.currentTime,.05); }
-  return {init,resume,hold:setHold,burst,whoosh,score,mute,get ready(){return !!ctx;}};
+  return {init,resume,hold:setHold,burst,whoosh,blip,score,mute,get ready(){return !!ctx;}};
 })();
 
 /* ---------- 3D film scene ---------- */
@@ -400,12 +401,14 @@ function fxStep(dt,t){
 
 /* ---------- Controls ---------- */
 const rail=$('#rail');
-FX.forEach(f=>{ const b=document.createElement('button'); b.type='button'; b.className='fx-btn'; b.id='fx-'+f.id; b.dataset.id=f.id;
-  b.setAttribute('aria-label',f.label+(f.mode==='hold'?' (switch on or off)':' (one burst)')); if(f.mode==='hold') b.setAttribute('aria-pressed','false');
-  b.innerHTML='<span class="key">'+f.key+'</span><i class="dot"></i><svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[f.id]+'</svg><span class="lab">'+f.label+'</span>'; rail.appendChild(b); });
-rail.addEventListener('click',e=>{ const b=e.target.closest('.fx-btn'); if(b) trigger(b.dataset.id); });
+if (rail) {
+  FX.forEach(f=>{ const b=document.createElement('button'); b.type='button'; b.className='fx-btn'; b.id='fx-'+f.id; b.dataset.id=f.id;
+    b.setAttribute('aria-label',f.label+(f.mode==='hold'?' (switch on or off)':' (one burst)')); if(f.mode==='hold') b.setAttribute('aria-pressed','false');
+    b.innerHTML='<span class="key">'+f.key+'</span><i class="dot"></i><svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[f.id]+'</svg><span class="lab">'+f.label+'</span>'; rail.appendChild(b); });
+  rail.addEventListener('click',e=>{ const b=e.target.closest('.fx-btn'); if(b) trigger(b.dataset.id); });
+}
 
-function start(){ if(started) return; started=true; stage.classList.add('open'); Snd.init(); Snd.resume(); Snd.score(); }
+function start(){ if(started) return false; started=true; stage.classList.add('open'); Snd.init(); Snd.resume(); Snd.score(); return true; }
 function setHold(id,v){ on[id]=v; const b=$('#fx-'+id); if(b){ b.classList.toggle('on',v); b.setAttribute('aria-pressed',String(v)); } Snd.hold(id,v); }
 function burst(id){
   const b=$('#fx-'+id); if(b){ b.classList.add('firing'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('firing'),FXMAP[id].dur); }
@@ -413,17 +416,48 @@ function burst(id){
   try{ if(navigator.vibrate) navigator.vibrate(id==='lightning'?[60,40,30]:[40]); }catch(e){}
 }
 function trigger(id){ start(); if(FXMAP[id].mode==='hold') setHold(id,!on[id]); else burst(id); }
-const goBtn=$('#go'); if(goBtn) goBtn.addEventListener('click',start);
+
 addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; const f=FX.find(x=>x.key===e.key); if(f){ e.preventDefault(); trigger(f.id); } });
 
-/* the show */
+/* the show: welcome titles -> effects -> thank-you card */
 const SHOW=[[0,'fog',1],[2,'wind',1],[4.5,'rain',1],[8,'lightning'],[11,'lightning'],[13.5,'rain',0],[14.5,'fire',1],[17,'air'],[20,'air'],[24,'fire',0],[25,'wind',0],[25.5,'bubbles',1],[31,'bubbles',0],[31.5,'snow',1],[37,'snow',0],[38,'fog',0]];
 const SHOW_END=40; let showT=[], showStart=0;
 const showBtn=$('#show'), showLbl=$('#showLbl');
+const intro=$('#intro'), outro=$('#outro'), skipBtn=$('#skipIntro'), againBtn=$('#again'), prebook=$('#prebook');
+const leader=null, leaderN=null;
+const INTRO_LINE=reduce?2.2:2.8; let introT=[], inIntro=false, endT=[];
+if(intro) intro.style.setProperty('--intro-dur',INTRO_LINE+'s');
+function tabbable(el,v){ if(el) el.tabIndex=v?0:-1; }
+function focusQuiet(el){ if(el&&(document.activeElement===document.body||hall.contains(document.activeElement))) try{ el.focus({preventScroll:true}); }catch(e){} }
 function allOff(){ FX.forEach(f=>{ if(f.mode==='hold'&&on[f.id]) setHold(f.id,false); }); }
 function stopShow(){ showT.forEach(clearTimeout); showT=[]; showing=false; if(showBtn){ showBtn.setAttribute('aria-pressed','false'); showBtn.style.setProperty('--p',0); } if(showLbl) showLbl.textContent='Play the show'; allOff(); }
-if(showBtn) showBtn.addEventListener('click',()=>{ start(); if(showing){ stopShow(); return; } allOff(); showing=true; showStart=performance.now(); showBtn.setAttribute('aria-pressed','true'); if(showLbl) showLbl.textContent='Stop the show';
-  SHOW.forEach(s=>showT.push(setTimeout(()=>{ if(s[2]===undefined) burst(s[1]); else setHold(s[1],!!s[2]); },s[0]*1000))); showT.push(setTimeout(stopShow,SHOW_END*1000)); });
+function setOutro(v){ if(!outro) return; outro.classList.toggle('on',v); outro.setAttribute('aria-hidden',String(!v)); tabbable(prebook,v); tabbable(againBtn,v); if(v) focusQuiet(prebook); }
+function clearEnd(){ endT.forEach(clearTimeout); endT=[]; }
+function finale(){ clearEnd(); stopShow(); Snd.whoosh(); stage.classList.add('closed');
+  endT.push(setTimeout(()=>stage.classList.add('lit'),reduce?100:3000));
+  endT.push(setTimeout(()=>setOutro(true),reduce?200:3900)); }
+function reopen(){ clearEnd(); setOutro(false); stage.classList.remove('lit');
+  if(!stage.classList.contains('closed')) return 0; stage.classList.remove('closed'); Snd.whoosh(); return reduce?100:1800; }
+function playShow(){ endIntro(false); const wait=reopen(); if(wait){ endT.push(setTimeout(playShow,wait)); return; } stopShow(); showing=true; showStart=performance.now();
+  if(showBtn) showBtn.setAttribute('aria-pressed','true'); if(showLbl) showLbl.textContent='Stop the show';
+  SHOW.forEach(s=>showT.push(setTimeout(()=>{ if(s[2]===undefined) burst(s[1]); else setHold(s[1],!!s[2]); },s[0]*1000)));
+  showT.push(setTimeout(finale,SHOW_END*1000)); }
+function beginIntro(){ if(!intro){ playShow(); return; } inIntro=true; const seat=$('#tkSeat'), is=$('#introSeat'); if(seat&&is) is.textContent=seat.textContent;
+  introT.push(setTimeout(()=>{ intro.classList.add('on'); tabbable(skipBtn,true); focusQuiet(skipBtn); },reduce?300:1200));
+  const tText=(reduce?300:1200)+1400+INTRO_LINE*1000;
+  introT.push(setTimeout(()=>{ if(intro) intro.classList.remove('on'); endIntro(true); },tText)); }
+function endIntro(thenPlay){ if(!inIntro) return; inIntro=false; introT.forEach(clearTimeout); introT=[];
+  if(intro) intro.classList.remove('on'); if(leader) leader.classList.remove('on'); tabbable(skipBtn,false); if(thenPlay) setTimeout(playShow,reduce?50:300); }
+const goBtn=$('#go'); if(goBtn) goBtn.addEventListener('click',()=>{ if(start()) beginIntro(); });
+if(skipBtn) skipBtn.addEventListener('click',()=>{ endIntro(false); playShow(); });
+if(againBtn) againBtn.addEventListener('click',playShow);
+if(showBtn) showBtn.addEventListener('click',()=>{ start(); if(showing){ stopShow(); return; } playShow(); });
+/* magnetic pre-book button, fine pointers only */
+if(prebook&&outro&&!reduce&&matchMedia('(hover: hover) and (pointer: fine)').matches){
+  outro.addEventListener('pointermove',e=>{ const r=prebook.getBoundingClientRect(), dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2), d=Math.hypot(dx,dy);
+    prebook.style.transform=d<120?'translate('+(dx*.22).toFixed(1)+'px,'+(dy*.3).toFixed(1)+'px)':''; });
+  outro.addEventListener('pointerleave',()=>{ prebook.style.transform=''; });
+}
 const densEl=$('#dens'); if(densEl) densEl.addEventListener('input',e=>{ D=.35+.65*(+e.target.value)/100; });
 if(innerWidth<700 && densEl){ densEl.value=55; D=.35+.65*.55; }
 const sheet=document.querySelector('.plan'), scrim=$('#scrim');

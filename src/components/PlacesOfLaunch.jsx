@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './PlacesOfLaunch.css';
 
-const LON0 = 67.5,
-  LON1 = 97.5,
-  LAT0 = 7.2,
-  LAT1 = 37.2;
+import { STATES, MAP_BOUNDS, projectLatLon } from './indiaMapData';
 
 // Regions – East first so it appears at the top of the list
 const R = ['East', 'North & Central', 'West', 'South'];
@@ -82,138 +79,9 @@ const ST = [
   'Tamil Nadu',
 ];
 
-const P = [
-  [68.2, 23.7],
-  [68.8, 24.3],
-  [70.1, 24.4],
-  [70.2, 25.6],
-  [69.5, 26.6],
-  [70.3, 27.8],
-  [71.9, 27.95],
-  [73, 29.2],
-  [74.3, 30.1],
-  [74.9, 31],
-  [74.6, 31.9],
-  [75.4, 32.5],
-  [74.2, 33.4],
-  [73.9, 34.5],
-  [74.2, 36],
-  [75.1, 37],
-  [77.8, 35.5],
-  [79.3, 34.9],
-  [80.2, 35.4],
-  [79.6, 33],
-  [78.8, 32.6],
-  [78.7, 32.2],
-  [79, 31.2],
-  [80.2, 30.5],
-  [80.5, 30.2],
-  [80.1, 29.2],
-  [80.1, 28.8],
-  [81, 28.2],
-  [82.7, 27.5],
-  [84, 27.4],
-  [85, 26.8],
-  [86.5, 26.4],
-  [88.1, 26.5],
-  [88.1, 27.1],
-  [88, 27.9],
-  [88.7, 28.1],
-  [88.9, 27.3],
-  [88.9, 26.9],
-  [89.8, 26.7],
-  [91.7, 26.8],
-  [92.1, 27.8],
-  [93, 28.3],
-  [94.2, 29],
-  [95.4, 29.2],
-  [96.2, 29],
-  [97, 28.3],
-  [96.9, 27.5],
-  [97, 27],
-  [96, 27.2],
-  [95.2, 26.7],
-  [95, 26],
-  [94.6, 25.2],
-  [94.6, 24],
-  [93.4, 23],
-  [93.2, 22.2],
-  [92.6, 22.1],
-  [92.3, 23.2],
-  [91.7, 22.9],
-  [91.2, 23.1],
-  [91.5, 24.1],
-  [92.3, 24.9],
-  [91.9, 25.2],
-  [90.5, 25.15],
-  [89.9, 25.3],
-  [89.8, 26],
-  [89, 26.3],
-  [88.4, 26.5],
-  [88.4, 25.8],
-  [88.1, 25.2],
-  [88, 24.7],
-  [88.7, 24.2],
-  [88.9, 23.3],
-  [88.7, 22.6],
-  [89, 22],
-  [88.9, 21.6],
-  [88.2, 21.7],
-  [87, 21.5],
-  [86.9, 20.8],
-  [86.7, 20],
-  [85.8, 19.7],
-  [84.8, 19.1],
-  [83.5, 18],
-  [82.3, 16.7],
-  [81.2, 16],
-  [80.3, 15.5],
-  [80.1, 14],
-  [80.3, 13.1],
-  [79.9, 11.7],
-  [79.8, 10.4],
-  [79.2, 9.2],
-  [78.4, 9],
-  [78.2, 8.8],
-  [77.55, 8.08],
-  [76.9, 8.5],
-  [76.4, 9.5],
-  [75.9, 11],
-  [75, 12.3],
-  [74.6, 13.5],
-  [74.3, 14.8],
-  [73.7, 16],
-  [73.3, 17.5],
-  [72.9, 19],
-  [72.7, 20.4],
-  [72.7, 21],
-  [72.5, 21.7],
-  [72.6, 22.3],
-  [72.2, 21.9],
-  [71, 20.7],
-  [70.4, 20.9],
-  [69.6, 21.6],
-  [69, 22.2],
-  [69.8, 22.6],
-  [70.4, 22.95],
-  [69.5, 22.9],
-  [68.8, 23.2],
-];
-
-function inside(x, y) {
-  let c = false;
-  for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
-    const a = P[i],
-      b = P[j];
-    if (
-      a[1] > y !== b[1] > y &&
-      x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]
-    ) {
-      c = !c;
-    }
-  }
-  return c;
-}
+// Precise state-level outline (simplemaps India SVG) shared by every state.
+const INDIA_PATH_D = STATES.map((st) => st[2]).join('');
+const MAP_PAD = 6; // px breathing room inside the stage
 
 export default function PlacesOfLaunch({ onSelectCityForPass }) {
   const puriDebutDoneRef = useRef(false);
@@ -240,6 +108,10 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
     accRGB: '255, 106, 43',
     launchedRGB: '45, 212, 191',
     dotCol: 'rgba(255, 255, 255, 0.17)',
+    scale: 1,
+    ox: 0,
+    oy: 0,
+    indiaPath: null,
     pinEls: [],
     chipEls: [],
     rafId: null,
@@ -343,19 +215,37 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
     g.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
     g.clearRect(0, 0, s.W, s.H);
 
-    // 1. Draw light white outline around India map to improve visibility
-    g.beginPath();
-    for (let i = 0; i < P.length; i++) {
-      const px = ((P[i][0] - LON0) / (LON1 - LON0)) * s.W;
-      const py = ((LAT1 - P[i][1]) / (LAT1 - LAT0)) * s.H;
-      if (i === 0) g.moveTo(px, py);
-      else g.lineTo(px, py);
+    const path = s.indiaPath;
+    if (path) {
+      // 1a. Faint internal state borders, clipped to the landmass
+      g.save();
+      g.setTransform(s.dpr * s.scale, 0, 0, s.dpr * s.scale, s.dpr * s.ox, s.dpr * s.oy);
+      g.clip(path);
+      g.strokeStyle = 'rgba(255, 255, 255, 0.085)';
+      g.lineWidth = 0.7 / s.scale;
+      g.lineJoin = 'round';
+      g.stroke(path);
+      g.restore();
+
+      // 1b. Outer coastline / border only: stroke, then knock out the interior
+      const off = document.createElement('canvas');
+      off.width = baseCanvasRef.current.width;
+      off.height = baseCanvasRef.current.height;
+      const o = off.getContext('2d');
+      if (o) {
+        o.setTransform(s.dpr * s.scale, 0, 0, s.dpr * s.scale, s.dpr * s.ox, s.dpr * s.oy);
+        o.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        o.lineWidth = 2.4 / s.scale;
+        o.lineJoin = 'round';
+        o.stroke(path);
+        o.globalCompositeOperation = 'destination-out';
+        o.fill(path);
+        g.save();
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        g.drawImage(off, 0, 0);
+        g.restore();
+      }
     }
-    g.closePath();
-    g.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    g.lineWidth = 1.2;
-    g.lineJoin = 'round';
-    g.stroke();
 
     // 2. Draw matrix dots
     g.fillStyle = s.dotCol;
@@ -384,20 +274,35 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
       c.height = s.H * s.dpr;
     }
 
-    s.cpx = CITIES.map((c) => [
-      ((c[2] - LON0) / (LON1 - LON0)) * s.W,
-      ((LAT1 - c[1]) / (LAT1 - LAT0)) * s.H,
-    ]);
+    // Fit the SVG map bounds into the stage, preserving aspect ratio
+    const bw = MAP_BOUNDS.maxX - MAP_BOUNDS.minX;
+    const bh = MAP_BOUNDS.maxY - MAP_BOUNDS.minY;
+    s.scale = Math.min((s.W - MAP_PAD * 2) / bw, (s.H - MAP_PAD * 2) / bh);
+    s.ox = (s.W - bw * s.scale) / 2 - MAP_BOUNDS.minX * s.scale;
+    s.oy = (s.H - bh * s.scale) / 2 - MAP_BOUNDS.minY * s.scale;
+    if (!s.indiaPath) s.indiaPath = new Path2D(INDIA_PATH_D);
 
+    s.cpx = CITIES.map((c) => {
+      const [mx, my] = projectLatLon(c[1], c[2]);
+      return [s.ox + mx * s.scale, s.oy + my * s.scale];
+    });
+
+    // Position the DOM pins in px so they match the canvas exactly
+    s.pinEls.forEach((el, i) => {
+      if (!el || !s.cpx[i]) return;
+      el.style.left = s.cpx[i][0] + (CITIES[i][4] || 0) + 'px';
+      el.style.top = s.cpx[i][1] + (CITIES[i][5] || 0) + 'px';
+    });
+
+    const hit = base.getContext('2d');
+    if (hit) hit.setTransform(1, 0, 0, 1, 0, 0);
     const step = s.W / 78;
     const newDots = [];
     for (let y = step / 2; y < s.H; y += step) {
       for (let x = step / 2; x < s.W; x += step) {
         if (
-          !inside(
-            LON0 + (x / s.W) * (LON1 - LON0),
-            LAT1 - (y / s.H) * (LAT1 - LAT0)
-          )
+          !hit ||
+          !hit.isPointInPath(s.indiaPath, (x - s.ox) / s.scale, (y - s.oy) / s.scale)
         )
           continue;
         let bi = 0,
@@ -431,18 +336,6 @@ export default function PlacesOfLaunch({ onSelectCityForPass }) {
       const isLaunched = LAUNCHED_INDICES.has(i);
       const d = document.createElement('div');
       d.className = 'c' + (isLaunched ? ' launched' : '');
-      d.style.left =
-        'calc(' +
-        ((c[2] - LON0) / (LON1 - LON0)) * 100 +
-        '% + ' +
-        (c[4] || 0) +
-        'px)';
-      d.style.top =
-        'calc(' +
-        ((LAT1 - c[1]) / (LAT1 - LAT0)) * 100 +
-        '% + ' +
-        (c[5] || 0) +
-        'px)';
       d.style.setProperty('--dl', ((i * 0.41) % 3.6).toFixed(2) + 's');
       // Puri gets a star marker; others get the regular dot
       if (isLaunched) {

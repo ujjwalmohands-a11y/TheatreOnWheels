@@ -1323,3 +1323,59 @@
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   Redesign Extensions: Seat Tags, Live DB Sync Bar & Excel Exporter Modal
+   Adheres strictly to Clean + Interactive UI Standards & 8px rhythm
+   ========================================================================== */
+
+/* Cursor Spotlight Glow (pointer fine only) */
+@media (hover: hover) and (pointer: fine) {
+  .po-ticket::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    border-radius: inherit;
+    background: radial-gradient(circle 280px at var(--spot-x, 80%) var(--spot-y, 30%), rgba(255, 255, 255, 0.16) 0%, transparent 80%);
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+  }
+  .po-ticket:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Allocated Seat Badges on Pass */
+.po-seat-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: rgba(20, 5, 0, 0.18);
+  border: 1px solid rgba(255, 230, 195, 0.4);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--po-ink);
+  text-transform: uppercase;
+}
+
+.po-stub-seat-number {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--po-ink);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Confirmed View: Cloud Sync Chip */
+.po-chip-db {
+  background: rgba(20, 5, 0, 0.22);
+  color: var(--po-ink);
+  border: 1px solid rgba(255, 230, 195, 0.45);
+}
+

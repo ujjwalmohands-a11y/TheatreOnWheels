@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './PrebookPass.css';
+import {
+  saveBooking,
+  exportBookingsToCSV,
+} from '../services/bookingDatabase';
 
 /**
  * Lightweight Web Audio synthesizer for paper tear sound.
@@ -74,6 +78,7 @@ function burstSparks(el) {
 export default function PrebookPass({
   initialCity = '',
   selectedWorld = '',
+  selectedSeat = 'B4',
   worlds = [
     { id: 'space', title: 'Space Odyssey', tagline: 'Zero gravity. Infinite wonder.' },
     { id: 'ocean', title: 'Deep Ocean', tagline: 'Pressure. Darkness. Life.' },
@@ -85,7 +90,7 @@ export default function PrebookPass({
 }) {
   const [formData, setFormData] = useState({
     name: '',
-    city: '',
+    city: initialCity || '',
     destination: selectedWorld || '',
     whatsapp: '',
     email: '',
@@ -95,7 +100,9 @@ export default function PrebookPass({
   const [stage, setStage] = useState('idle'); // 'idle' | 'tearing' | 'confirmed'
   const [refCode, setRefCode] = useState('');
   const [destOpen, setDestOpen] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('idle'); // 'idle' | 'synced' | 'local'
 
+  const ticketRef = useRef(null);
   const destDropdownRef = useRef(null);
   const tearBadgeRef = useRef(null);
 
@@ -106,7 +113,24 @@ export default function PrebookPass({
     }
   }, [selectedWorld]);
 
-  // Apple dropdown: close on click outside or Escape
+  // Mouse spotlight glow tracking over the pass (Clean + Interactive UI recipe)
+  useEffect(() => {
+    const el = ticketRef.current;
+    if (!el || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const handlePointerMove = (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      el.style.setProperty('--spot-x', `${x.toFixed(1)}%`);
+      el.style.setProperty('--spot-y', `${y.toFixed(1)}%`);
+    };
+
+    el.addEventListener('pointermove', handlePointerMove, { passive: true });
+    return () => el.removeEventListener('pointermove', handlePointerMove);
+  }, []);
+
+  // Dropdown: close on click outside or Escape
   useEffect(() => {
     if (!destOpen) return;
     const handleClickOutside = (e) => {
@@ -162,13 +186,12 @@ export default function PrebookPass({
     }
   };
 
-  // Trigger Tearing Animation & Pass Confirmation
-  const triggerTearAndReserve = (e) => {
+  // Trigger Tearing Animation & Pass Confirmation + Database Record
+  const triggerTearAndReserve = async (e) => {
     if (e) e.preventDefault();
     if (stage !== 'idle') return;
 
     if (!validate()) {
-      // Focus first error field
       setTimeout(() => {
         const firstBad = document.querySelector('.po-field.is-err input');
         if (firstBad) firstBad.focus();
@@ -189,6 +212,7 @@ export default function PrebookPass({
       destination: formData.destination,
       whatsapp: formData.whatsapp.trim(),
       email: formData.email.trim(),
+      seat: selectedSeat || 'B4',
       reference: code,
       at: new Date().toISOString(),
     };
@@ -197,12 +221,13 @@ export default function PrebookPass({
       onPrebooked(bookingDetails);
     }
 
+    // Save to Database (Local storage + Google Sheets/Excel Webhook from .env)
     try {
-      const existing = JSON.parse(localStorage.getItem('tow_prebookings') || '[]');
-      existing.push(bookingDetails);
-      localStorage.setItem('tow_prebookings', JSON.stringify(existing));
-    } catch {
-      // storage unavailable
+      const result = await saveBooking(bookingDetails);
+      setSyncStatus(result.synced ? 'synced' : 'local');
+    } catch (err) {
+      console.warn('[PrebookPass] Database save notification:', err);
+      setSyncStatus('local');
     }
 
     // Complete tear and transition cleanly to confirmed state
@@ -222,6 +247,18 @@ export default function PrebookPass({
     setErrors({});
   };
 
+  // Optional Admin Keyboard Shortcut: Ctrl + Shift + E to download bookings backup
+  useEffect(() => {
+    const handleAdminKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
+        e.preventDefault();
+        exportBookingsToCSV();
+      }
+    };
+    window.addEventListener('keydown', handleAdminKey);
+    return () => window.removeEventListener('keydown', handleAdminKey);
+  }, []);
+
   const displayName = formData.name.trim().toUpperCase() || 'GUEST';
 
   return (
@@ -229,18 +266,19 @@ export default function PrebookPass({
       <section
         className={`po-ticket ${stage === 'tearing' ? 'is-tearing' : ''} ${stage === 'confirmed' ? 'is-confirmed' : ''}`}
         id="po-ticket"
+        ref={ticketRef}
         aria-label="Pre-booking pass"
       >
-        {/* Subtle Static Cosmic Star Elements (Zero CPU, renders in 1 frame) */}
+        {/* Subtle Static Cosmic Star Elements (Zero CPU) */}
         <span className="po-stars" aria-hidden="true" />
 
         {stage !== 'confirmed' ? (
           <>
-            {/* ── Main Ticket Body (Clean, Minimal, Radiant) ── */}
+            {/* ── Main Ticket Body ── */}
             <div className="po-main">
               {/* Header: Title & Selected World Pill */}
               <div className="po-top">
-                <span className="po-kicker">Theatre on Wheels</span>
+                <span className="po-kicker">Theatre on Wheels · 7D Mobile Cinema</span>
                 <span className={`po-pill ${!formData.destination ? 'is-empty' : ''}`}>
                   <span className="po-pill-dot" aria-hidden="true" />
                   {formData.destination || 'Select World'}
@@ -249,7 +287,7 @@ export default function PrebookPass({
 
               {/* Dynamic Attendee Hero */}
               <div className="po-hero">
-                <span className="po-label">Ticket Holder</span>
+                <span className="po-label">Seat Pre-booked For</span>
                 <div
                   className={`po-holder ${formData.name.trim() ? 'filled' : ''}`}
                   id="po-holder"
@@ -261,14 +299,16 @@ export default function PrebookPass({
                   <span>{formData.city || 'Your City'}</span>
                   <i>·</i>
                   <span>2026 Tour</span>
+                  <i>·</i>
+                  <span className="po-seat-tag">Seat {selectedSeat || 'B4'} Pre-allocated</span>
                 </div>
               </div>
 
-              {/* Form: Minimal, clean, un-clustered */}
+              {/* Form: Clean, un-clustered inputs */}
               <form className="po-form" id="po-form" onSubmit={triggerTearAndReserve} noValidate>
                 <div className="po-grid">
                   <div className={`po-field ${errors.name ? 'is-err' : ''}`}>
-                    <label htmlFor="po-name">Your Name</label>
+                    <label htmlFor="po-name">Your Full Name</label>
                     <input
                       id="po-name"
                       type="text"
@@ -291,12 +331,12 @@ export default function PrebookPass({
                     />
                   </div>
 
-                  {/* Clean, Minimal Apple-Style Destination Selector */}
+                  {/* Clean Apple-Style Destination Selector */}
                   <div
                     className={`po-field po-apple-select-wrap ${errors.destination ? 'is-err' : ''}`}
                     ref={destDropdownRef}
                   >
-                    <label id="po-dest-label" htmlFor="po-dest-btn">Destination</label>
+                    <label id="po-dest-label" htmlFor="po-dest-btn">Destination World</label>
                     <button
                       type="button"
                       id="po-dest-btn"
@@ -334,7 +374,7 @@ export default function PrebookPass({
                         aria-labelledby="po-dest-label"
                       >
                         <div className="po-apple-menu-header">
-                          <span>Available Worlds</span>
+                          <span>Available 7D Worlds</span>
                         </div>
                         <div className="po-apple-menu-list">
                           {worlds.map((w) => {
@@ -384,19 +424,19 @@ export default function PrebookPass({
                   </div>
 
                   <div className={`po-field ${errors.whatsapp ? 'is-err' : ''}`}>
-                    <label htmlFor="po-wa">WhatsApp</label>
+                    <label htmlFor="po-wa">WhatsApp Number</label>
                     <input
                       id="po-wa"
                       type="tel"
                       autoComplete="tel"
-                      placeholder="+91 00000 00000"
+                      placeholder="+91 98765 43210"
                       value={formData.whatsapp}
                       onChange={(e) => handleInputChange('whatsapp', e.target.value)}
                     />
                   </div>
 
                   <div className={`po-field ${errors.email ? 'is-err' : ''}`}>
-                    <label htmlFor="po-email">Email</label>
+                    <label htmlFor="po-email">Email Address</label>
                     <input
                       id="po-email"
                       type="email"
@@ -412,13 +452,12 @@ export default function PrebookPass({
                 <div className="po-actions">
                   <div className="po-tear-hint">
                     <span className="po-hint-dot" aria-hidden="true" />
-                    <span>Tear stub to confirm</span>
+                    <span>Tear stub to lock in your seat</span>
                     <span className="po-hint-arr" aria-hidden="true">→</span>
                   </div>
                   <span className="po-note">
-                    Limited to 150 passes per city · Free early access
+                    Limited to 150 passes per tour stop · Zero payment required today
                   </span>
-                  {/* Invisible submit button so Enter key anywhere in the form triggers reservation */}
                   <button type="submit" style={{ display: 'none' }} aria-hidden="true" tabIndex={-1} />
                 </div>
               </form>
@@ -436,36 +475,37 @@ export default function PrebookPass({
               className="po-stub"
               id="po-stub"
               onClick={stage === 'idle' ? triggerTearAndReserve : undefined}
-              title="Click to tear pass and confirm"
+              title="Click to tear pass and pre-book your seat"
             >
-              <div className="po-stub-admit">ADMIT ONE</div>
+              <div className="po-stub-admit">BOARDING PASS</div>
 
               <div className="po-stub-mid">
                 <span className="po-stub-dest">{formData.destination || '2026 TOUR'}</span>
+                <span className="po-stub-seat-number">SEAT {selectedSeat || 'B4'}</span>
                 <div className="po-stub-barcode" aria-hidden="true" />
                 <span className="po-stub-serial">#TOW-2026</span>
               </div>
 
-              {/* Clearly Visible, High-Contrast "TEAR HERE" Action Badge */}
+              {/* High-Contrast "PRE-BOOK SEAT" Action Badge */}
               <button
                 type="button"
                 className="po-tear-badge"
                 ref={tearBadgeRef}
-                aria-label="Tear pass here to confirm"
+                aria-label="Tear pass here to pre-book your seat"
                 tabIndex={0}
               >
                 <span className="po-tear-icon" aria-hidden="true">✂</span>
-                <span className="po-tear-label">TEAR HERE</span>
+                <span className="po-tear-label">PRE-BOOK SEAT</span>
               </button>
             </div>
           </>
         ) : (
-          /* ── Confirmed State: Ultra-Minimal Text, SVGs & Infinite Animated Lines ── */
+          /* ── Confirmed State ── */
           <div className="po-confirmed-view" id="po-done">
             {/* Background Watermark */}
             <span className="po-watermark-bg" aria-hidden="true">26</span>
 
-            {/* Top Row: Animated SVG Check Seal & Destination Pill */}
+            {/* Top Row: Check Seal & Destination Pill */}
             <div className="po-confirmed-header">
               <div className="po-check-seal">
                 <svg className="po-check-svg" viewBox="0 0 52 52" aria-hidden="true">
@@ -473,8 +513,8 @@ export default function PrebookPass({
                   <path className="po-check-path" fill="none" d="M14.5 27.2l7.2 7.2 16.5-16.5" />
                 </svg>
                 <div className="po-check-text">
-                  <span className="po-check-title">PASS CONFIRMED</span>
-                  <span className="po-check-sub">THEATRE ON WHEELS</span>
+                  <span className="po-check-title">SEAT PRE-BOOKED</span>
+                  <span className="po-check-sub">THEATRE ON WHEELS · 2026 TOUR</span>
                 </div>
               </div>
 
@@ -484,12 +524,12 @@ export default function PrebookPass({
               </span>
             </div>
 
-            {/* Main Middle Row: Reference Code, Infinite Route Line, & Visual Badges */}
+            {/* Main Middle Row: Reference Code, Flow & Details */}
             <div className="po-confirmed-body">
               <div className="po-confirmed-info">
-                {/* Big Bold Reference Hero */}
+                {/* Big Reference Hero */}
                 <div className="po-ref-wrap">
-                  <span className="po-ref-label">PASS KEY</span>
+                  <span className="po-ref-label">PASS KEY · PRE-BOOKING REFERENCE</span>
                   <span className="po-ref">{refCode}</span>
                 </div>
 
@@ -516,9 +556,21 @@ export default function PrebookPass({
                     <span className="po-node-ring active" />
                     <span className="po-node-name">{formData.destination}</span>
                   </div>
+
+                  <div className="po-flow-track">
+                    <svg className="po-flow-svg" viewBox="0 0 200 12" preserveAspectRatio="none">
+                      <line x1="0" y1="6" x2="200" y2="6" className="po-flow-track-base" />
+                      <line x1="0" y1="6" x2="200" y2="6" className="po-flow-track-moving" />
+                    </svg>
+                  </div>
+
+                  <div className="po-route-node">
+                    <span className="po-node-ring active" />
+                    <span className="po-node-name">Seat {selectedSeat || 'B4'}</span>
+                  </div>
                 </div>
 
-                {/* Minimalist Graphic Status Chips (No heavy paragraph) */}
+                {/* Graphic Status Chips */}
                 <div className="po-meta-badges">
                   <span className="po-meta-chip">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -533,12 +585,20 @@ export default function PrebookPass({
                     </svg>
                     {formData.whatsapp}
                   </span>
+
+                  <span className="po-meta-chip po-chip-db">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <line x1="3" y1="9" x2="21" y2="9" />
+                      <line x1="9" y1="21" x2="9" y2="9" />
+                    </svg>
+                    {syncStatus === 'synced' ? 'Synced to Cloud Database' : 'Saved in Pre-booking Ledger'}
+                  </span>
                 </div>
               </div>
 
-              {/* Right Side: Security Scanner & Live Audio Visualizer Lines */}
+              {/* Right Side: Security Scanner & Audio Visualizer */}
               <div className="po-confirmed-stub">
-                {/* 360 Spatial Audio Waves (Infinite Sound Lines) */}
                 <div className="po-sound-lines" aria-hidden="true">
                   <span className="po-eq-line l1" />
                   <span className="po-eq-line l2" />
@@ -549,20 +609,19 @@ export default function PrebookPass({
                   <span className="po-eq-line l7" />
                 </div>
 
-                {/* Laser-Scanned Barcode */}
                 <div className="po-scanner-wrap">
                   <div className="po-confirmed-barcode" aria-hidden="true" />
                   <div className="po-laser-line" aria-hidden="true" />
                 </div>
 
-                <span className="po-confirmed-serial">VERIFIED · 2026 TOUR</span>
+                <span className="po-confirmed-serial">SEAT {selectedSeat || 'B4'} · VERIFIED</span>
               </div>
             </div>
 
-            {/* Bottom Footer Action */}
+            {/* Bottom Actions */}
             <div className="po-confirmed-footer">
               <button className="po-link" type="button" onClick={handleReset}>
-                Book another pass ↺
+                Pre-book another seat ↺
               </button>
             </div>
           </div>
