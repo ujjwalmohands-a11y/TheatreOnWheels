@@ -1,89 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <!-- Background Midnight Deep Obsidian Gradient -->
     <linearGradient id="towBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#020617"/>
-      <stop offset="45%" stop-color="#070e28"/>
-      <stop offset="100%" stop-color="#0c1d47"/>
+      <stop offset="45%" stop-color="#070f2b"/>
+      <stop offset="100%" stop-color="#0c1e4a"/>
     </linearGradient>
-
-    <!-- Electric Cyan & Azure Metallic Rim -->
     <linearGradient id="towBlueRim" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#a5f3fc"/>
       <stop offset="30%" stop-color="#38bdf8"/>
       <stop offset="70%" stop-color="#0284c7"/>
       <stop offset="100%" stop-color="#67e8f9"/>
     </linearGradient>
-
-    <!-- Luminous Electric Blue Gradient (Cinema Wheel & Rays) -->
     <linearGradient id="towBlue" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="20%" stop-color="#7dd3fc"/>
-      <stop offset="60%" stop-color="#0284c7"/>
+      <stop offset="22%" stop-color="#7dd3fc"/>
+      <stop offset="65%" stop-color="#0284c7"/>
       <stop offset="100%" stop-color="#2563eb"/>
     </linearGradient>
-
-    <!-- Forward Projector Beam Cyan Plasma Glow -->
     <radialGradient id="towBeamGrad" cx="0%" cy="50%" r="100%">
-      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.7"/>
-      <stop offset="45%" stop-color="#0284c7" stop-opacity="0.3"/>
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#0284c7" stop-opacity="0.35"/>
       <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/>
     </radialGradient>
-
-    <!-- Fusion Reactor Core Hub Glow -->
     <radialGradient id="towHub" cx="35%" cy="35%" r="65%">
       <stop offset="0%" stop-color="#ffffff"/>
       <stop offset="25%" stop-color="#a5f3fc"/>
       <stop offset="60%" stop-color="#00d2ff"/>
       <stop offset="100%" stop-color="#0284c7"/>
     </radialGradient>
-
-    <!-- Ambient Cyan Core Radiance -->
-    <radialGradient id="towAmbient" cx="42%" cy="50%" r="55%">
-      <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.32"/>
+    <radialGradient id="towAmbient" cx="45%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.35"/>
       <stop offset="100%" stop-color="#0055ff" stop-opacity="0"/>
     </radialGradient>
   </defs>
-
-  <!-- Squircle Base for High Contrast on both Light & Dark Tabs -->
-  <rect width="64" height="64" rx="16" fill="url(#towBg)"/>
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#towAmbient)"/>
-  <rect x="1.5" y="1.5" width="61" height="61" rx="14.5" fill="none" stroke="url(#towBlueRim)" stroke-width="1.5"/>
-
-  <!-- Forward Cinema Projection Light Cone -->
+  <circle cx="32" cy="32" r="31" fill="url(#towBg)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#towAmbient)"/>
+  <circle cx="32" cy="32" r="30" fill="none" stroke="url(#towBlueRim)" stroke-width="2"/>
   <polygon points="26,32 58,15 58,49" fill="url(#towBeamGrad)"/>
-  <line x1="26" y1="32" x2="57" y2="16" stroke="url(#towBlue)" stroke-width="1.3" stroke-linecap="round" opacity="0.75"/>
-  <line x1="26" y1="32" x2="57" y2="48" stroke="url(#towBlue)" stroke-width="1.3" stroke-linecap="round" opacity="0.75"/>
-  <line x1="26" y1="32" x2="59" y2="32" stroke="url(#towBlue)" stroke-width="1" stroke-dasharray="2 3" opacity="0.45"/>
-
-  <!-- Kinetic Cinema Wheel / Projector Reel -->
-  <!-- Outer Wheel Rim -->
+  <line x1="26" y1="32" x2="57" y2="16" stroke="url(#towBlue)" stroke-width="1.3" stroke-linecap="round" opacity="0.8"/>
+  <line x1="26" y1="32" x2="57" y2="48" stroke="url(#towBlue)" stroke-width="1.3" stroke-linecap="round" opacity="0.8"/>
+  <line x1="26" y1="32" x2="59" y2="32" stroke="url(#towBlue)" stroke-width="1" stroke-dasharray="2 3" opacity="0.5"/>
   <circle cx="26" cy="32" r="16" fill="none" stroke="url(#towBlue)" stroke-width="3.2"/>
-
-  <!-- Concentric Film Track -->
   <circle cx="26" cy="32" r="11" fill="none" stroke="url(#towBlueRim)" stroke-width="1.1" stroke-dasharray="3.2 2"/>
-
-  <!-- Six Turbine Wheel Spokes / Shutter Blades -->
   <g stroke="url(#towBlue)" stroke-width="2.3" stroke-linecap="round">
     <line x1="26" y1="16" x2="26" y2="48"/>
     <line x1="12.1" y1="24" x2="39.9" y2="40"/>
     <line x1="12.1" y1="40" x2="39.9" y2="24"/>
   </g>
-
-  <!-- Film Reel Aperture Openings (Obsidian Cutouts) -->
-  <circle cx="26" cy="22.5" r="2.2" fill="#020617"/>
-  <circle cx="26" cy="41.5" r="2.2" fill="#020617"/>
-  <circle cx="17.8" cy="27.2" r="2.2" fill="#020617"/>
-  <circle cx="34.2" cy="36.8" r="2.2" fill="#020617"/>
-  <circle cx="17.8" cy="36.8" r="2.2" fill="#020617"/>
-  <circle cx="34.2" cy="27.2" r="2.2" fill="#020617"/>
-
-  <!-- Center Hub with Glowing Electric Core -->
-  <circle cx="26" cy="32" r="5.6" fill="#020617" stroke="url(#towBlue)" stroke-width="1.2"/>
+  <circle cx="26" cy="22.5" r="2.2" fill="#030712"/>
+  <circle cx="26" cy="41.5" r="2.2" fill="#030712"/>
+  <circle cx="17.8" cy="27.2" r="2.2" fill="#030712"/>
+  <circle cx="34.2" cy="36.8" r="2.2" fill="#030712"/>
+  <circle cx="17.8" cy="36.8" r="2.2" fill="#030712"/>
+  <circle cx="34.2" cy="27.2" r="2.2" fill="#030712"/>
+  <circle cx="26" cy="32" r="5.6" fill="#030712" stroke="url(#towBlue)" stroke-width="1.2"/>
   <circle cx="26" cy="32" r="4.3" fill="url(#towHub)"/>
   <circle cx="26" cy="32" r="1.6" fill="#ffffff"/>
-
-  <!-- 7D Cinematic Light Spark (Focal Beam) -->
   <path d="M51 16.5 Q51 21 55.5 21 Q51 21 51 25.5 Q51 21 46.5 21 Q51 21 51 16.5 Z" fill="#ffffff"/>
   <circle cx="51" cy="21" r="1.2" fill="#38bdf8"/>
 </svg>
